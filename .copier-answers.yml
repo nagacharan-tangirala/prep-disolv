@@ -1,0 +1,12 @@
+# Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+_commit: 2023.10.27
+_src_path: gh:scientific-python/cookie
+backend: hatch
+email: nagacharan.tangirala@tum.de
+full_name: Nagacharan Teja Tangirala
+license: MIT
+org: nagacharan-tangirala
+project_name: prep-pavenet
+project_short_description: The scenarios for PAVeNet are prepared by this project.
+url: https://github.com/nagacharan-tangirala/prep-pavenet
+vcs: true
