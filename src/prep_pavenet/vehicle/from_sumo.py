@@ -1,6 +1,5 @@
 import logging
 from collections import namedtuple
-from dataclasses import dataclass
 from pathlib import Path
 import xml.etree.ElementTree as Et
 
@@ -52,6 +51,7 @@ class FCDDataArrays:
         self.veh_type = np.array([], dtype=str)
 
     def reset(self):
+        self.array_size = 0
         self.time_step = np.array([], dtype=np.int64)
         self.node_id = np.array([], dtype=np.int64)
         self.x = np.array([], dtype=np.float64)
@@ -99,7 +99,6 @@ def _convert_fcd_to_parquet(fcd_xml: Path, parquet_file: Path) -> None:
             fcd_arrays = _read_vehicle_data(vehicle_ele, fcd_arrays)
 
             if fcd_arrays.array_size == 1000:
-                fcd_arrays.array_size = 0
                 fcd_data_df = pd.DataFrame(fcd_arrays.__dict__)
                 fcd_data_df.drop(columns=["array_size"], inplace=True)
                 output_writer.write_table(pa.Table.from_pandas(fcd_data_df))
@@ -123,17 +122,21 @@ def _write_activation_data(activation_data: dict, output_path: Path) -> None:
         ],
         columns=["node_id", "start_time", "end_time"],
     )
-    activation_df.to_csv(output_path / "vehicle_activations.csv", index=False,
-                         header=True)
+    activation_df.to_csv(
+        output_path / "vehicle_activations.csv", index=False, header=True
+    )
 
 
-def _read_vehicle_data(vehicle_ele: Et.Element,
-                       fcd_arrays: FCDDataArrays) -> FCDDataArrays:
+def _read_vehicle_data(
+    vehicle_ele: Et.Element, fcd_arrays: FCDDataArrays
+) -> FCDDataArrays:
     """Read the vehicle data from XML element and add it to FCD arrays."""
     fcd_arrays.node_id = np.append(fcd_arrays.node_id, int(vehicle_ele.attrib["id"]))
     fcd_arrays.x = np.append(fcd_arrays.x, float(vehicle_ele.attrib["x"]))
     fcd_arrays.y = np.append(fcd_arrays.y, float(vehicle_ele.attrib["y"]))
-    fcd_arrays.velocity = np.append(fcd_arrays.velocity, float(vehicle_ele.attrib["speed"]))
+    fcd_arrays.velocity = np.append(
+        fcd_arrays.velocity, float(vehicle_ele.attrib["speed"])
+    )
     fcd_arrays.veh_type = np.append(fcd_arrays.veh_type, vehicle_ele.attrib["type"])
     road_data = _read_road_data(vehicle_ele.attrib["lane"])
     road_data = _convert_road_data_to_int(road_data)
@@ -186,13 +189,13 @@ def update_activation(activation_data: dict, timestamp: int, vehicle_id: int) ->
 
 
 def _read_road_data(edge_data: str) -> road_info:
-    if ':' in edge_data:
+    if ":" in edge_data:
         return read_lane_data_with_colon(edge_data)
-    elif '#' in edge_data:
+    elif "#" in edge_data:
         return _read_lane_data_with_hash(edge_data)
     else:
         road_data = road_info(road_id=edge_data, sub_road_id=0, lane_id=0)
-        if '_' in edge_data:
+        if "_" in edge_data:
             road_data.road_id, road_data.lane_id = edge_data.split("_")
         return road_data
 
