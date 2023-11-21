@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging.config
 from datetime import datetime
 from os.path import join
@@ -12,8 +14,9 @@ DEFAULT_LOG_LEVEL = "INFO"
 DEFAULT_LOG_OVERWRITE = False
 
 
-def _setup_logger_config(log_file: str, log_level: str, log_overwrite: bool = False) ->\
-        None:
+def _setup_logger_config(
+    log_file: str, log_level: str, log_overwrite: bool = False
+) -> None:
     """
     Configure the logger.
     """
@@ -43,12 +46,12 @@ def _setup_logger_config(log_file: str, log_level: str, log_overwrite: bool = Fa
             },
             "local_file_handler": {
                 "class": "logging.handlers.RotatingFileHandler",
-                "level": log_level,
+                "level": log_level.upper(),
                 "formatter": "simple",
                 "filename": log_file,
             },
         },
-        "root": {"level": log_level, "handlers": ["local_file_handler"]},
+        "root": {"level": log_level.upper(), "handlers": ["local_file_handler"]},
     }
 
     logging.config.dictConfig(simple_config)
