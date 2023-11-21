@@ -12,10 +12,10 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 import tqdm
 
-from prep_pavenet.setup.config import TRACE_FILE, NETWORK_FILE
-from prep_pavenet.vehicle.veh_activations import VehicleActivation
-from prep_pavenet.common.utils import get_offsets
 from prep_pavenet.common.columns import POSITIONS_FOLDER
+from prep_pavenet.common.utils import get_offsets
+from prep_pavenet.setup.config import NETWORK_FILE, TRACE_FILE
+from prep_pavenet.vehicle.veh_activations import VehicleActivation
 
 logger = logging.getLogger(__name__)
 

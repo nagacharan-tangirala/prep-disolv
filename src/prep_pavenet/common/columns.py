@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 NODE_ID = "node_id"
 COORD_X = "x"
 COORD_Y = "y"

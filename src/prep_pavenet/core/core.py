@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import logging
 
+from prep_pavenet.controller.controller import create_controllers
 from prep_pavenet.rsu.rsu import create_rsu
 from prep_pavenet.setup.config import LOG_SETTINGS, Config
 from prep_pavenet.setup.logger import setup_logging
 from prep_pavenet.vehicle.vehicle import create_vehicles
-from prep_pavenet.controller.controller import create_controllers
 
 logger = logging.getLogger(__name__)
 

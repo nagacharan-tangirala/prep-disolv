@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from pathlib import Path
-from prep_pavenet.common.columns import ACTIVATIONS_FOLDER
 
 import pandas as pd
+
+from prep_pavenet.common.columns import ACTIVATIONS_FOLDER
 
 ACTIVATION_COLUMNS = ["node_id", "on_times", "off_times"]
 
@@ -61,6 +62,6 @@ class VehicleActivation:
             columns=ACTIVATION_COLUMNS,
         )
         activation_df.to_parquet(
-            self.output_path / ACTIVATIONS_FOLDER / str("vehicle_activations.parquet"),
+            self.output_path / ACTIVATIONS_FOLDER / "vehicle_activations.parquet",
             index=False,
         )
