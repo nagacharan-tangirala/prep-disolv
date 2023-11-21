@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from prep_pavenet.common.constants import *
+from prep_pavenet.common.columns import *
 from prep_pavenet.setup.config import END_TIME, NETWORK_FILE, START_TIME, ID_INIT
 
 JUNCTION = "junction"

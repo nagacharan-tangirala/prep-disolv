@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from prep_pavenet.common.constants import ACTIVATIONS_FOLDER
+from prep_pavenet.common.columns import ACTIVATIONS_FOLDER
 
 import pandas as pd
 
