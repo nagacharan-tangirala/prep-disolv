@@ -62,9 +62,15 @@ class Config:
 
     def _create_output_folders(self) -> None:
         """Create the output folders."""
-        output_path = (
-            Path(self.config_file).parent / self.settings[OUTPUT_SETTINGS][OUTPUT_PATH]
-        )
+        out_path = Path(self.settings[OUTPUT_SETTINGS][OUTPUT_PATH])
+        if out_path.is_absolute():
+            output_path = out_path
+        else:
+            output_path = (
+                Path(self.config_file).parent
+                / self.settings[OUTPUT_SETTINGS][OUTPUT_PATH]
+            )
+
         output_path.mkdir(parents=True, exist_ok=True)
         Path.mkdir(output_path / ACTIVATIONS_FOLDER, exist_ok=True)
         Path.mkdir(output_path / LINKS_FOLDER, exist_ok=True)
