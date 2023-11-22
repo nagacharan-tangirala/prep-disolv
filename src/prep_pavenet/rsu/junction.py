@@ -27,6 +27,9 @@ class JunctionActivationData:
         self.start_times = start_time
         self.end_times = end_time
 
+    def __repr__(self) -> str:
+        return f"JunctionActivationData({self.id}, {self.start_times}, {self.end_times})"
+
 
 class JunctionPlacement:
     def __init__(
