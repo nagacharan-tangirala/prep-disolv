@@ -12,18 +12,22 @@ JUNCTION = "junction"
 
 
 class JunctionData:
-    def __init__(self, junction_id: int, x: float, y: float) -> None:
+    def __init__(self, junction_id: int, ns3_id: int, x: float, y: float) -> None:
+        self.ns3_id = ns3_id
         self.id = junction_id
         self.x = x
         self.y = y
 
     def __repr__(self) -> str:
-        return f"JunctionData({self.id}, {self.x}, {self.y})"
+        return f"JunctionData({self.id}, {self.ns3_id}, {self.x}, {self.y})"
 
 
 class JunctionActivationData:
-    def __init__(self, junction_id: int, start_time: int, end_time: int) -> None:
+    def __init__(
+        self, junction_id: int, junction_ns3_id: int, start_time: int, end_time: int
+    ) -> None:
         self.id = junction_id
+        self.ns3_id = junction_ns3_id
         self.start_times = start_time
         self.end_times = end_time
 
@@ -40,6 +44,7 @@ class JunctionPlacement:
         rsu_config: dict,
         config_path: Path,
         output_path: Path,
+        ns3_id_init: int,
     ):
         """The constructor of the JunctionPlacement class."""
         self.output_path = output_path
@@ -47,20 +52,27 @@ class JunctionPlacement:
         self.start_time = rsu_config[START_TIME]
         self.end_time = rsu_config[END_TIME]
         self.id_init = rsu_config[ID_INIT]
+        self.ns3_id_init = ns3_id_init
         self.sumo_net = config_path / trace_config[NETWORK_FILE]
+        self.rsu_count = 0
 
     def create_rsu_data(self) -> None:
         """Create the RSU data."""
         junctions = self._get_junctions()
+        self.rsu_count = len(junctions)
         self._write_activation_data(junctions)
         self._write_rsu_data(junctions)
+
+    def get_unique_rsu_count(self) -> int:
+        """Get the unique RSU count."""
+        return self.rsu_count
 
     def _write_activation_data(self, junctions: list[JunctionData]) -> None:
         """Write the activation data to a file."""
         activations = []
         for junction in junctions:
             junction_data = JunctionActivationData(
-                junction.id, self.start_time, self.end_time
+                junction.id, junction.ns3_id, self.start_time, self.end_time
             )
             activations.append(junction_data)
 
@@ -69,7 +81,12 @@ class JunctionPlacement:
         )
         activation_df = pd.DataFrame(
             [
-                [activation.id, activation.start_times, activation.end_times]
+                [
+                    activation.id,
+                    activation.ns3_id,
+                    activation.start_times,
+                    activation.end_times,
+                ]
                 for activation in activations
             ],
             columns=ACTIVATION_COLUMNS,
@@ -85,7 +102,10 @@ class JunctionPlacement:
         """Write the junction data to a file."""
         junction_file = self.output_path / POSITIONS_FOLDER / "roadside_units.parquet"
         junction_df = pd.DataFrame(
-            [[0, junction.id, junction.x, junction.y] for junction in junctions],
+            [
+                [0, junction.id, junction.ns3_id, junction.x, junction.y]
+                for junction in junctions
+            ],
             columns=RSU_COLUMNS,
         )
         junction_df.to_parquet(junction_file, index=False)
@@ -107,6 +127,7 @@ class JunctionPlacement:
                 junction_id = self.id_init + junction_count
                 x = float(item.attrib[COORD_X])
                 y = float(item.attrib[COORD_Y])
-                junctions.append(JunctionData(junction_id, x, y))
+                junctions.append(JunctionData(junction_id, self.ns3_id_init, x, y))
                 junction_count += 1
+                self.ns3_id_init += 1
         return junctions
