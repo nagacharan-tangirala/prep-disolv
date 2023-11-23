@@ -76,6 +76,7 @@ class SumoConverter:
         self.net_file = self.config_path / trace_config[NETWORK_FILE]
         offsets = get_offsets(self.net_file)
         self.offset_x, self.offset_y = offsets[0], offsets[1]
+        self.unique_vehicle_count = 0
 
     def fcd_to_parquet(self) -> None:
         """Convert the FCD output from SUMO to a parquet file."""
@@ -84,6 +85,10 @@ class SumoConverter:
         parquet_file = self.output_path / POSITIONS_FOLDER / f"{file_name}.parquet"
         logger.info("Writing to %s", parquet_file)
         self._convert_fcd_to_parquet(parquet_file)
+
+    def get_unique_vehicle_count(self) -> int:
+        """Get the unique vehicle count."""
+        return self.unique_vehicle_count
 
     def _convert_fcd_to_parquet(self, parquet_file: Path) -> None:
         """Convert the FCD output from SUMO to a parquet file."""
@@ -128,6 +133,7 @@ class SumoConverter:
 
         output_writer.close()
         progress_bar.close()
+        self.unique_vehicle_count = len(self.activation.activation_data)
         self.activation.write_activation_data()
 
     def _read_vehicle_data(

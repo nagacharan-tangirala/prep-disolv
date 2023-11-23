@@ -4,14 +4,13 @@ from pathlib import Path
 
 import pandas as pd
 
-from prep_pavenet.common.columns import ACTIVATIONS_FOLDER
-
-ACTIVATION_COLUMNS = ["node_id", "on_times", "off_times"]
+from prep_pavenet.common.columns import ACTIVATIONS_FOLDER, ACTIVATION_COLUMNS
 
 
 class ActivationData:
     def __init__(self, node_id: int) -> None:
         self.id = node_id
+        self.ns3_id = node_id
         self.start_times: list[int] = []
         self.end_times: list[int] = []
         self.index: int = -1
@@ -31,7 +30,7 @@ class ActivationData:
         self.trace_disrupted = True
 
     def __repr__(self) -> str:
-        return f"ActivationData({self.id}, {self.start_times}, {self.end_times})"
+        return f"ActivationData({self.id}, {self.ns3_id}, {self.start_times}, {self.end_times})"
 
 
 class VehicleActivation:
@@ -56,7 +55,12 @@ class VehicleActivation:
     def write_activation_data(self) -> None:
         activation_df = pd.DataFrame(
             [
-                [activation.id, activation.start_times, activation.end_times]
+                [
+                    activation.id,
+                    activation.ns3_id,
+                    activation.start_times,
+                    activation.end_times,
+                ]
                 for activation in self.activation_data.values()
             ],
             columns=ACTIVATION_COLUMNS,

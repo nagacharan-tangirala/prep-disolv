@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 SUMO = "sumo"
 
 
-def create_vehicles(config: Config) -> None:
+def create_vehicles(config: Config) -> int:
     """Create the vehicle data."""
     logger.debug("Read SUMO output files")
     output_path = config.path / config.get(OUTPUT_SETTINGS)[OUTPUT_PATH]
@@ -22,3 +22,5 @@ def create_vehicles(config: Config) -> None:
             output_path,
         )
         sumo_converter.fcd_to_parquet()
+        return sumo_converter.get_unique_vehicle_count()
+    return 0
