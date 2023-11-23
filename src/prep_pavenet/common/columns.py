@@ -1,13 +1,16 @@
 from __future__ import annotations
 
 NODE_ID = "node_id"
+NS3_ID = "ns3_id"
 COORD_X = "x"
 COORD_Y = "y"
 TIME_STEP = "time_step"
+ON_TIMES = "on_times"
+OFF_TIMES = "off_times"
 
-ACTIVATION_COLUMNS = [NODE_ID, "on_times", "off_times"]
-RSU_COLUMNS = [TIME_STEP, NODE_ID, COORD_X, COORD_Y]
-CONTROLLER_COLUMNS = [TIME_STEP, NODE_ID, COORD_X, COORD_Y]
+ACTIVATION_COLUMNS = [NODE_ID, NS3_ID, ON_TIMES, OFF_TIMES]
+RSU_COLUMNS = [TIME_STEP, NODE_ID, NS3_ID, COORD_X, COORD_Y]
+CONTROLLER_COLUMNS = [TIME_STEP, NODE_ID, NS3_ID, COORD_X, COORD_Y]
 
 # Folders
 POSITIONS_FOLDER = "positions"
