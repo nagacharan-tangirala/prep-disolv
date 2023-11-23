@@ -126,7 +126,6 @@ class SumoConverter:
 
         if fcd_arrays.array_size > 0:
             fcd_data_df = pd.DataFrame(fcd_arrays.__dict__)
-            print(fcd_data_df)
             fcd_data_df.drop(columns=["array_size"], inplace=True)
             output_writer.write_table(pa.Table.from_pandas(fcd_data_df))
             fcd_arrays.reset()
