@@ -23,6 +23,7 @@ class CentralControllerPlacer:
         cont_config: dict,
         config_path: Path,
         output_path: Path,
+        controller_id_init: int,
     ) -> None:
         """The constructor of the CentralControllerPlacer class."""
         self.output_path = output_path
@@ -31,6 +32,7 @@ class CentralControllerPlacer:
         self.end_time = cont_config[END_TIME]
         self.id_init = cont_config[ID_INIT]
         self.sumo_net = config_path / trace_config[NETWORK_FILE]
+        self.controller_id_init = controller_id_init
 
     def create_controller_data(self):
         """Create the controller data."""
@@ -44,7 +46,7 @@ class CentralControllerPlacer:
         )
         controller_id = self.id_init
         activation_df = pd.DataFrame(
-            [[controller_id, self.start_time, self.end_time]],
+            [[controller_id, self.controller_id_init, self.start_time, self.end_time]],
             columns=ACTIVATION_COLUMNS,
         )
         activation_df.to_parquet(activation_file, index=False)
@@ -60,7 +62,7 @@ class CentralControllerPlacer:
         controller_id = self.id_init
         centers = get_center(self.sumo_net)
         controller_df = pd.DataFrame(
-            [[0, controller_id, centers[0], centers[1]]],
+            [[0, controller_id, self.controller_id_init, centers[0], centers[1]]],
             columns=CONTROLLER_COLUMNS,
         )
         controller_df.to_parquet(controller_file, index=False)

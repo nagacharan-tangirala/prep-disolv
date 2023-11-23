@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 CENTER = "center"
 
 
-def create_controllers(config: Config) -> None:
+def create_controllers(config: Config, controller_id_init: int) -> int:
     """Create the controller data."""
     logger.debug("Read Controller data")
     output_path = config.path / config.get(OUTPUT_SETTINGS)[OUTPUT_PATH]
@@ -20,5 +20,7 @@ def create_controllers(config: Config) -> None:
             config.get(CONTROLLER_SETTINGS),
             config.path,
             output_path,
+            controller_id_init,
         )
         controller_placer.create_controller_data()
+        return 1
