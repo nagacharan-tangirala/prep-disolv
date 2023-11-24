@@ -10,7 +10,7 @@ from prep_pavenet.common.columns import (
     CONTROLLER_COLUMNS,
     POSITIONS_FOLDER,
 )
-from prep_pavenet.common.utils import get_center
+from prep_pavenet.common.utils import get_center, get_offsets
 from prep_pavenet.setup.config import END_TIME, ID_INIT, NETWORK_FILE, START_TIME
 
 CENTRE = "center"
@@ -33,11 +33,18 @@ class CentralControllerPlacer:
         self.id_init = cont_config[ID_INIT]
         self.sumo_net = config_path / trace_config[NETWORK_FILE]
         self.controller_id_init = controller_id_init
+        self.controller_file = (
+            self.output_path / POSITIONS_FOLDER / "controller.parquet"
+        )
 
     def create_controller_data(self):
         """Create the controller data."""
         self._write_activation_data()
         self._write_controller_data()
+
+    def get_controller_file(self) -> Path:
+        """Return the controller file."""
+        return self.controller_file
 
     def _write_activation_data(self) -> None:
         """Write the activation data of controller to a file."""
@@ -58,14 +65,23 @@ class CentralControllerPlacer:
 
     def _write_controller_data(self) -> None:
         """Write the controller data to a file."""
-        controller_file = self.output_path / POSITIONS_FOLDER / "controller.parquet"
         controller_id = self.id_init
         centers = get_center(self.sumo_net)
+        offsets = get_offsets(self.sumo_net)
+        offset_x, offset_y = offsets[0], offsets[1]
         controller_df = pd.DataFrame(
-            [[0, controller_id, self.controller_id_init, centers[0], centers[1]]],
+            [
+                [
+                    0,
+                    controller_id,
+                    self.controller_id_init,
+                    centers[0] - offset_x,
+                    centers[1] - offset_y,
+                ]
+            ],
             columns=CONTROLLER_COLUMNS,
         )
-        controller_df.to_parquet(controller_file, index=False)
+        controller_df.to_parquet(self.controller_file, index=False)
         controller_df.to_csv(
             self.output_path / POSITIONS_FOLDER / "controller.csv",
             index=False,
