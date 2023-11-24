@@ -10,17 +10,25 @@ logger = logging.getLogger(__name__)
 SUMO = "sumo"
 
 
-def create_vehicles(config: Config) -> int:
-    """Create the vehicle data."""
-    logger.debug("Read SUMO output files")
-    output_path = config.path / config.get(OUTPUT_SETTINGS)[OUTPUT_PATH]
-    if config.get(VEHICLE_SETTINGS)[SIMULATOR] == SUMO:
-        sumo_converter = SumoConverter(
-            config.get(TRAFFIC_SETTINGS),
-            config.get(VEHICLE_SETTINGS),
-            config.path,
-            output_path,
-        )
-        sumo_converter.fcd_to_parquet()
-        return sumo_converter.get_unique_vehicle_count()
-    return 0
+class VehicleConverter:
+    def __init__(self, config: Config) -> None:
+        """The constructor of the VehicleConverter class."""
+        self.config = config
+        self.vehicle_file = None
+        self.vehicle_count = 0
+
+    def create_vehicles(self) -> int:
+        """Create the vehicle data."""
+        logger.debug("Read SUMO output files")
+        output_path = self.config.path / self.config.get(OUTPUT_SETTINGS)[OUTPUT_PATH]
+        if self.config.get(VEHICLE_SETTINGS)[SIMULATOR] == SUMO:
+            sumo_converter = SumoConverter(
+                self.config.get(TRAFFIC_SETTINGS),
+                self.config.get(VEHICLE_SETTINGS),
+                self.config.path,
+                output_path,
+            )
+            sumo_converter.fcd_to_parquet()
+            self.vehicle_count = sumo_converter.get_unique_vehicle_count()
+            self.vehicle_file = sumo_converter.get_parquet_file()
+        return self.vehicle_count

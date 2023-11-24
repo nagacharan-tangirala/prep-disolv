@@ -38,6 +38,9 @@ class VehicleActivation:
         self.output_path = output_path
         self.activation_data: dict[int, ActivationData] = {}
         self.active_vehicles: set = set()
+        self.activation_file = (
+            self.output_path / ACTIVATIONS_FOLDER / "vehicle_activations.parquet"
+        )
 
     def update_activation(self, timestamp: int, vehicle_id: int) -> None:
         self.active_vehicles.add(vehicle_id)
@@ -65,7 +68,4 @@ class VehicleActivation:
             ],
             columns=ACTIVATION_COLUMNS,
         )
-        activation_df.to_parquet(
-            self.output_path / ACTIVATIONS_FOLDER / "vehicle_activations.parquet",
-            index=False,
-        )
+        activation_df.to_parquet(self.activation_file, index=False)

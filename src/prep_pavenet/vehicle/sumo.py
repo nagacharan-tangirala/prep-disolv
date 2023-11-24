@@ -77,23 +77,29 @@ class SumoConverter:
         offsets = get_offsets(self.net_file)
         self.offset_x, self.offset_y = offsets[0], offsets[1]
         self.unique_vehicle_count = 0
+        self.parquet_file: Path = output_path
 
     def fcd_to_parquet(self) -> None:
         """Convert the FCD output from SUMO to a parquet file."""
         logger.info("Converting %s to parquet", self.fcd_file)
         file_name = self.fcd_file.stem
         parquet_file = self.output_path / POSITIONS_FOLDER / f"{file_name}.parquet"
+        self.parquet_file = parquet_file
         logger.info("Writing to %s", parquet_file)
-        self._convert_fcd_to_parquet(parquet_file)
+        self._convert_fcd_to_parquet()
 
     def get_unique_vehicle_count(self) -> int:
         """Get the unique vehicle count."""
         return self.unique_vehicle_count
 
-    def _convert_fcd_to_parquet(self, parquet_file: Path) -> None:
+    def get_parquet_file(self) -> Path:
+        """Get the parquet file."""
+        return self.parquet_file
+
+    def _convert_fcd_to_parquet(self) -> None:
         """Convert the FCD output from SUMO to a parquet file."""
         root = Et.parse(self.fcd_file).getroot()
-        output_writer = _get_output_writer(parquet_file)
+        output_writer = _get_output_writer(self.parquet_file)
         fcd_arrays: FCDDataArrays = FCDDataArrays()
 
         progress_bar = tqdm.tqdm(
