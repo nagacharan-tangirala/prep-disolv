@@ -6,6 +6,7 @@ from pathlib import Path
 import pandas as pd
 
 from prep_pavenet.common.columns import *
+from prep_pavenet.common.utils import get_offsets
 from prep_pavenet.setup.config import END_TIME, ID_INIT, NETWORK_FILE, START_TIME
 
 JUNCTION = "junction"
@@ -55,6 +56,9 @@ class JunctionPlacement:
         self.ns3_id_init = ns3_id_init
         self.sumo_net = config_path / trace_config[NETWORK_FILE]
         self.rsu_count = 0
+        self.parquet_file = (
+            self.output_path / POSITIONS_FOLDER / "roadside_units.parquet"
+        )
 
     def create_rsu_data(self) -> None:
         """Create the RSU data."""
@@ -66,6 +70,10 @@ class JunctionPlacement:
     def get_unique_rsu_count(self) -> int:
         """Get the unique RSU count."""
         return self.rsu_count
+
+    def get_parquet_file(self) -> Path:
+        """Get the parquet file."""
+        return self.parquet_file
 
     def _write_activation_data(self, junctions: list[JunctionData]) -> None:
         """Write the activation data to a file."""
@@ -100,7 +108,6 @@ class JunctionPlacement:
 
     def _write_rsu_data(self, junctions: list[JunctionData]) -> None:
         """Write the junction data to a file."""
-        junction_file = self.output_path / POSITIONS_FOLDER / "roadside_units.parquet"
         junction_df = pd.DataFrame(
             [
                 [0, junction.id, junction.ns3_id, junction.x, junction.y]
@@ -108,7 +115,7 @@ class JunctionPlacement:
             ],
             columns=RSU_COLUMNS,
         )
-        junction_df.to_parquet(junction_file, index=False)
+        junction_df.to_parquet(self.parquet_file, index=False)
         junction_df.to_csv(
             self.output_path / POSITIONS_FOLDER / "roadside_units.csv", index=False
         )
@@ -116,6 +123,9 @@ class JunctionPlacement:
     def _get_junctions(self) -> list[JunctionData]:
         """Get all junctions from the SUMO network file."""
         element_iter = Et.iterparse(self.sumo_net, events=("start", "end"))
+        net_file = self.sumo_net
+        offsets = get_offsets(net_file)
+        offset_x, offset_y = offsets[0], offsets[1]
         junctions = []
         junction_count = 1
         for event, item in element_iter:
@@ -125,8 +135,8 @@ class JunctionPlacement:
                 and item.attrib["type"] == "priority"
             ):
                 junction_id = self.id_init + junction_count
-                x = float(item.attrib[COORD_X])
-                y = float(item.attrib[COORD_Y])
+                x = float(item.attrib[COORD_X]) - offset_x
+                y = float(item.attrib[COORD_Y]) - offset_y
                 junctions.append(JunctionData(junction_id, self.ns3_id_init, x, y))
                 junction_count += 1
                 self.ns3_id_init += 1
