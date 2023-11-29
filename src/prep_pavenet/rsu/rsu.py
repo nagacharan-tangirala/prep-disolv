@@ -1,6 +1,13 @@
 from __future__ import annotations
 
-from prep_pavenet.setup.config import *
+from prep_pavenet.setup.config import (
+    OUTPUT_PATH,
+    OUTPUT_SETTINGS,
+    PLACEMENT,
+    RSU_SETTINGS,
+    TRAFFIC_SETTINGS,
+    Config,
+)
 
 
 class RsuConverter:

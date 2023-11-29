@@ -123,7 +123,7 @@ class SumoConverter:
 
                     if fcd_arrays.array_size == 1000:
                         fcd_data_df = pd.DataFrame(fcd_arrays.__dict__)
-                        fcd_data_df.drop(columns=["array_size"], inplace=True)
+                        fcd_data_df = fcd_data_df.drop(columns=["array_size"])
                         output_writer.write_table(pa.Table.from_pandas(fcd_data_df))
                         fcd_arrays.reset()
 
@@ -132,7 +132,7 @@ class SumoConverter:
 
         if fcd_arrays.array_size > 0:
             fcd_data_df = pd.DataFrame(fcd_arrays.__dict__)
-            fcd_data_df.drop(columns=["array_size"], inplace=True)
+            fcd_data_df = fcd_data_df.drop(columns=["array_size"])
             output_writer.write_table(pa.Table.from_pandas(fcd_data_df))
             fcd_arrays.reset()
 
@@ -178,7 +178,7 @@ def _get_output_writer(parquet_file: Path) -> pq.ParquetWriter:
 
 def _build_fcd_schema() -> pa.Schema:
     """Build the schema for the FCD data."""
-    schema = pa.schema(
+    return pa.schema(
         [
             pa.field(TIME_STEP, pa.int64()),
             pa.field(NODE_ID, pa.int64()),
@@ -191,29 +191,27 @@ def _build_fcd_schema() -> pa.Schema:
             pa.field(VEH_TYPE, pa.string()),
         ]
     )
-    return schema
 
 
 def _convert_road_data_to_int(road_data: road_info) -> road_info:
     """Convert the road data to integers."""
-    road_data = road_info(
+    return road_info(
         road_id=int(road_data.road_id),
         sub_road_id=int(road_data.sub_road_id),
         lane_id=int(road_data.lane_id),
     )
-    return road_data
 
 
 def _read_road_data(edge_data: str) -> road_info:
     if ":" in edge_data:
         return read_lane_data_with_colon(edge_data)
-    elif "#" in edge_data:
+    if "#" in edge_data:
         return _read_lane_data_with_hash(edge_data)
-    else:
-        road_data = road_info(road_id=edge_data, sub_road_id=0, lane_id=0)
-        if "_" in edge_data:
-            road_data.road_id, road_data.lane_id = edge_data.split("_")
-        return road_data
+
+    road_data = road_info(road_id=edge_data, sub_road_id=0, lane_id=0)
+    if "_" in edge_data:
+        road_data.road_id, road_data.lane_id = edge_data.split("_")
+    return road_data
 
 
 def _read_lane_data_with_hash(edge_data: str) -> road_info:

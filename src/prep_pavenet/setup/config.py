@@ -1,10 +1,12 @@
-from __future__ import annotations
-
 from pathlib import Path
 
 import toml
 
-from prep_pavenet.common.columns import *
+from prep_pavenet.common.columns import (
+    ACTIVATIONS_FOLDER,
+    LINKS_FOLDER,
+    POSITIONS_FOLDER,
+)
 
 # Config keys.
 LOG_SETTINGS = "logging"

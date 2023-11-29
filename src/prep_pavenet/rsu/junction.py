@@ -5,7 +5,14 @@ from pathlib import Path
 
 import pandas as pd
 
-from prep_pavenet.common.columns import *
+from prep_pavenet.common.columns import (
+    POSITIONS_FOLDER,
+    ACTIVATIONS_FOLDER,
+    RSU_COLUMNS,
+    ACTIVATION_COLUMNS,
+    COORD_X,
+    COORD_Y,
+)
 from prep_pavenet.common.utils import get_offsets
 from prep_pavenet.setup.config import END_TIME, ID_INIT, NETWORK_FILE, START_TIME
 
