@@ -26,15 +26,15 @@ class CentralControllerPlacer:
         controller_id_init: int,
     ) -> None:
         """The constructor of the CentralControllerPlacer class."""
-        self.output_path = output_path
-        self.config_path = config_path
-        self.start_time = cont_config[START_TIME]
-        self.end_time = cont_config[END_TIME]
-        self.id_init = cont_config[ID_INIT]
-        self.sumo_net = config_path / trace_config[NETWORK_FILE]
+        self.output_path: Path = output_path
+        self.config_path: Path = config_path
+        self.start_time: int = cont_config[START_TIME]
+        self.end_time: int = cont_config[END_TIME]
+        self.id_init: int = cont_config[ID_INIT]
+        self.sumo_net: Path = config_path / trace_config[NETWORK_FILE]
         self.controller_id_init = controller_id_init
         self.controller_file = (
-            self.output_path / POSITIONS_FOLDER / "controller.parquet"
+            self.output_path / POSITIONS_FOLDER / "controllers.parquet"
         )
 
     def create_controller_data(self):
@@ -57,11 +57,6 @@ class CentralControllerPlacer:
             columns=ACTIVATION_COLUMNS,
         )
         activation_df.to_parquet(activation_file, index=False)
-        activation_df.to_csv(
-            self.output_path / ACTIVATIONS_FOLDER / "controller_activations.csv",
-            index=False,
-            header=True,
-        )
 
     def _write_controller_data(self) -> None:
         """Write the controller data to a file."""
@@ -82,8 +77,3 @@ class CentralControllerPlacer:
             columns=CONTROLLER_COLUMNS,
         )
         controller_df.to_parquet(self.controller_file, index=False)
-        controller_df.to_csv(
-            self.output_path / POSITIONS_FOLDER / "controller.csv",
-            index=False,
-            header=True,
-        )
