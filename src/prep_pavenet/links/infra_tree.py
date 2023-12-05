@@ -90,9 +90,12 @@ def get_n2n_links_with_radius(
     )
 
     # Source and target ids are the same because are finding n2n links.
-    return convert_query_to_df(
+    n2n_df = convert_query_to_df(
         node_ids, node_ids, node_distances, node_id_lists, time_step
     )
+
+    # Remove links to self.
+    return n2n_df[n2n_df[NODE_ID] != n2n_df[TARGET_ID]]
 
 
 def convert_query_to_df(
@@ -303,9 +306,10 @@ class InfraTree:
             return_distance=True,
         )
 
-        return convert_query_to_df(
+        link_df = convert_query_to_df(
             self.infra_ids, self.infra_ids, infra_distances, infra_id_lists, 0
         )
+        return link_df[link_df[NODE_ID] != link_df[TARGET_ID]]
 
     def get_i2i_links_of_radius(self, radius: float) -> pd.DataFrame:
         """Get the infrastructure links of given radius.
