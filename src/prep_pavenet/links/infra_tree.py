@@ -103,11 +103,13 @@ def convert_query_to_df(
 ):
     """Convert the query results to a dataframe."""
     links_df = pd.DataFrame(columns=LINK_COLUMNS)
-    for entry in range(target_idx_lists.shape[0]):
-        target_id_arr = np.array([target_ids[idx] for idx in target_idx_lists[entry]])
-        node_arr = np.array([source_ids[entry]] * len(target_id_arr))
-        dist_arr = np.array(target_distance_lists[entry])
+    for target_idx_list, target_distance_list, source_id in zip(
+        target_idx_lists, target_distance_lists, source_ids
+    ):
+        target_id_arr = np.array([target_ids[idx] for idx in target_idx_list])
+        dist_arr = np.array(target_distance_list)
         time_step_arr = np.array([time_step] * len(target_id_arr))
+        node_arr = np.array([source_id] * len(target_id_arr))
 
         temp_df = pd.DataFrame(
             {
