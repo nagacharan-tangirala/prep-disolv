@@ -331,6 +331,43 @@ class InfraTree:
             return_distance=True,
         )
 
-        return convert_query_to_df(
+        i2i_df = convert_query_to_df(
             self.infra_ids, self.infra_ids, infra_distances, infra_id_lists, 0
         )
+        return i2i_df[i2i_df[NODE_ID] != i2i_df[TARGET_ID]]
+
+    def get_i2_other_i_links_with_radius(
+        self,
+        other_infra_ids: np.ndarray,
+        other_infra_tree: KDTree,
+        time_step: int,
+        radius: float,
+    ) -> pd.DataFrame:
+        """Get the infrastructure links for the given input positions.
+
+        Parameters
+        ----------
+        other_infra_ids: np.ndarray
+            The node ids.
+        other_infra_tree: KDTree
+            The node tree.
+        time_step: int
+            The time step.
+        radius: float
+            The radius to be used for the search.
+
+        Returns
+        -------
+        pd.DataFrame
+            The dataframe containing the v2r links.
+        """
+        infra_id_lists, infra_distances = other_infra_tree.query_radius(
+            self.positions,
+            r=radius,
+            return_distance=True,
+        )
+
+        i2_other_i_df = convert_query_to_df(
+            self.infra_ids, other_infra_ids, infra_distances, infra_id_lists, time_step
+        )
+        return i2_other_i_df[i2_other_i_df[NODE_ID] != i2_other_i_df[TARGET_ID]]
