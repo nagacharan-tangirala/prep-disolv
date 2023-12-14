@@ -14,14 +14,18 @@ from prep_pavenet.setup.config import (
     LINK_SETTINGS,
     OUTPUT_PATH,
     OUTPUT_SETTINGS,
-    R2R_COUNT,
-    R2V_RADIUS,
     SIMULATION_SETTINGS,
     STEP_SIZE,
-    V2R_COUNT,
-    V2V_RADIUS,
     Config,
 )
+
+# Link keys.
+V2R_COUNT = "v2r_count"
+R2R_COUNT = "r2r_count"
+R2V_RADIUS = "r2v_radius"
+V2V_RADIUS = "v2v_radius"
+R2C_RADIUS = "r2c_radius"
+C2R_RADIUS = "c2r_radius"
 
 logger = logging.getLogger(__name__)
 
