@@ -77,14 +77,34 @@ class DeviceLinks:
         self.v2v_writer = LinksWriter(v2v_file)
         r2r_file = output_path / LINKS_FOLDER / "r2r_links.parquet"
         self.r2r_writer = LinksWriter(r2r_file)
+        r2c_file = output_path / LINKS_FOLDER / "r2c_links.parquet"
+        self.r2c_writer = LinksWriter(r2c_file)
+        c2r_file = output_path / LINKS_FOLDER / "c2r_links.parquet"
+        self.c2r_writer = LinksWriter(c2r_file)
 
     def _calculate_static_links(self) -> None:
         """Calculate the static links."""
         r2r_links = self.rsu_tree.get_i2i_links_of_count(self.r2r_count)
         self.r2r_writer.write_data(r2r_links)
         self.r2r_writer.close()
+        r2c_links = self.rsu_tree.get_i2_other_i_links_with_radius(
+            self.controller_tree.infra_ids,
+            self.controller_tree.tree,
+            0,
+            self.r2c_radius,
+        )
+        self.r2c_writer.write_data(r2c_links)
+        self.r2c_writer.close()
+        c2r_links = self.controller_tree.get_i2_other_i_links_with_radius(
+            self.rsu_tree.infra_ids,
+            self.rsu_tree.tree,
+            0,
+            self.c2r_radius,
+        )
+        self.c2r_writer.write_data(c2r_links)
+        self.c2r_writer.close()
 
-    def _calculate_links(self) -> None:
+    def _calculate_dynamic_links(self) -> None:
         """Calculate the links."""
         df_size_limit = 100000
         v2r_links = pd.DataFrame(columns=LINK_COLUMNS)
