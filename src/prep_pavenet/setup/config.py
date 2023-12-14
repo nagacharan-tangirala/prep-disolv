@@ -47,12 +47,6 @@ DURATION = "duration"
 STEP_SIZE = "step_size"
 STREAMING_TIME = "streaming_time"
 
-# Link keys.
-V2R_COUNT = "v2r_count"
-R2R_COUNT = "r2r_count"
-R2V_RADIUS = "r2v_radius"
-V2V_RADIUS = "v2v_radius"
-
 
 def read_config_toml(config_toml: str) -> dict:
     """

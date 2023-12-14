@@ -173,7 +173,7 @@ class InfraTree:
         """
         infra_distances, infra_id_lists = self.tree.query(
             node_positions,
-            k=link_count,
+            k=link_count + 1,
             return_distance=True,
         )
 
@@ -244,7 +244,7 @@ class InfraTree:
         """
         node_distances, node_id_lists = node_tree.query(
             self.positions,
-            k=link_count,
+            k=link_count + 1,
             return_distance=True,
         )
 
@@ -275,7 +275,7 @@ class InfraTree:
         Returns
         -------
         pd.DataFrame
-            The dataframe containing the v2r links.
+            The dataframe containing the i2n links.
         """
         node_id_lists, node_distances = node_tree.query_radius(
             self.positions,

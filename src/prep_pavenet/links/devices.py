@@ -43,6 +43,8 @@ class DeviceLinks:
         self.r2v_radius: float = self.config.get(LINK_SETTINGS)[R2V_RADIUS]
         self.v2v_radius: float = self.config.get(LINK_SETTINGS)[V2V_RADIUS]
         self.r2r_count: int = self.config.get(LINK_SETTINGS)[R2R_COUNT]
+        self.r2c_radius: int = self.config.settings.get(LINK_SETTINGS)[R2C_RADIUS]
+        self.c2r_radius: int = self.config.settings.get(LINK_SETTINGS)[C2R_RADIUS]
 
         self.step: int = self.config.get(SIMULATION_SETTINGS)[STEP_SIZE]
         self.duration: int = self.config.get(SIMULATION_SETTINGS)[DURATION]
@@ -58,12 +60,12 @@ class DeviceLinks:
         logger.info("Calculate infra to infra links")
         self._calculate_static_links()
         logger.info("Calculate vehicle to infra links")
-        self._calculate_links()
+        self._calculate_dynamic_links()
 
     def _prepare_position_trees(self) -> None:
         """Prepare the position trees."""
         self.rsu_tree = InfraTree(self.rsu_file)
-        self.controller_file = InfraTree(self.controller_file)
+        self.controller_tree = InfraTree(self.controller_file)
 
     def _create_trace_reader(self) -> None:
         """Create the trace reader."""
