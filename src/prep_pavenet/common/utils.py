@@ -17,8 +17,9 @@ def get_offsets(sumo_net_file: Path) -> (float, float):
             offset_x = float(boundary.split(",")[0])
             offset_y = float(boundary.split(",")[1])
             return offset_x, offset_y
-    logging.error("Could not find offsets in sumo net file.")
-    raise ValueError("Could not find offsets in sumo net file.")
+    msg = "Could not find offsets in sumo net file."
+    logging.error(msg)
+    raise ValueError(msg)
 
 
 def get_center(sumo_net_file: Path) -> (float, float):
@@ -32,3 +33,4 @@ def get_center(sumo_net_file: Path) -> (float, float):
             high_x = float(boundary.split(",")[2])
             high_y = float(boundary.split(",")[3])
             return (low_x + high_x) / 2, (low_y + high_y) / 2
+    return None

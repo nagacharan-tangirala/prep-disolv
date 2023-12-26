@@ -1,10 +1,12 @@
-from __future__ import annotations
-
 from pathlib import Path
 
 import toml
 
-from prep_pavenet.common.columns import *
+from prep_pavenet.common.columns import (
+    ACTIVATIONS_FOLDER,
+    LINKS_FOLDER,
+    POSITIONS_FOLDER,
+)
 
 # Config keys.
 LOG_SETTINGS = "logging"
@@ -13,6 +15,11 @@ VEHICLE_SETTINGS = "vehicles"
 RSU_SETTINGS = "rsu"
 OUTPUT_SETTINGS = "output"
 CONTROLLER_SETTINGS = "controller"
+SIMULATION_SETTINGS = "simulation"
+LINK_SETTINGS = "links"
+
+# Common keys.
+ID_INIT = "id_init"
 
 # Traffic keys.
 NETWORK_FILE = "network"
@@ -35,7 +42,10 @@ END_TIME = "end_time"
 LOG_LEVEL = "log_level"
 LOG_OVERWRITE = "log_overwrite"
 
-ID_INIT = "id_init"
+# Simulation keys.
+DURATION = "duration"
+STEP_SIZE = "step_size"
+STREAMING_TIME = "streaming_time"
 
 
 def read_config_toml(config_toml: str) -> dict:

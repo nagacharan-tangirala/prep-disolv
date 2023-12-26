@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 from prep_pavenet.common.columns import ACTIVATIONS_FOLDER, ACTIVATION_COLUMNS
@@ -38,6 +39,9 @@ class VehicleActivation:
         self.output_path = output_path
         self.activation_data: dict[int, ActivationData] = {}
         self.active_vehicles: set = set()
+        self.activation_file = (
+            self.output_path / ACTIVATIONS_FOLDER / "vehicle_activations.parquet"
+        )
 
     def update_activation(self, timestamp: int, vehicle_id: int) -> None:
         self.active_vehicles.add(vehicle_id)
@@ -53,19 +57,24 @@ class VehicleActivation:
                 self.activation_data[vehicle_id].disrupt_trace()
 
     def write_activation_data(self) -> None:
-        activation_df = pd.DataFrame(
-            [
-                [
-                    activation.id,
-                    activation.ns3_id,
-                    activation.start_times,
-                    activation.end_times,
-                ]
-                for activation in self.activation_data.values()
-            ],
-            columns=ACTIVATION_COLUMNS,
-        )
-        activation_df.to_parquet(
-            self.output_path / ACTIVATIONS_FOLDER / "vehicle_activations.parquet",
-            index=False,
-        )
+        activation_df = pd.DataFrame(columns=ACTIVATION_COLUMNS)
+        for vehicle_id in self.activation_data:
+            activation_data = self.activation_data[vehicle_id]
+            start_time_arr = np.array(activation_data.start_times)
+            end_time_arr = np.array(activation_data.end_times)
+            vehicle_id_arr = np.array([vehicle_id] * len(start_time_arr))
+            ns3_id_arr = np.array([activation_data.ns3_id] * len(start_time_arr))
+            temp_df = pd.DataFrame(
+                {
+                    ACTIVATION_COLUMNS[0]: vehicle_id_arr,
+                    ACTIVATION_COLUMNS[1]: ns3_id_arr,
+                    ACTIVATION_COLUMNS[2]: start_time_arr,
+                    ACTIVATION_COLUMNS[3]: end_time_arr,
+                }
+            )
+            activation_df = (
+                temp_df
+                if activation_df.empty
+                else pd.concat([activation_df, temp_df], ignore_index=True)
+            )
+        activation_df.to_parquet(self.activation_file, index=False)
