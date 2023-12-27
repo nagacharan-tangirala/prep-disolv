@@ -11,7 +11,7 @@ from prep_pavenet.common.columns import (
     POSITIONS_FOLDER,
 )
 from prep_pavenet.common.utils import get_center, get_offsets
-from prep_pavenet.setup.config import END_TIME, ID_INIT, NETWORK_FILE, START_TIME
+from prep_pavenet.common.config import END_TIME, ID_INIT, NETWORK_FILE, START_TIME
 
 CENTRE = "center"
 

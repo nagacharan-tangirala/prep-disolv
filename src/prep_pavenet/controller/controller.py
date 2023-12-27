@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 
 from prep_pavenet.controller.central import CentralControllerPlacer
-from prep_pavenet.setup.config import (
+from prep_pavenet.common.config import (
     CONTROLLER_SETTINGS,
     OUTPUT_PATH,
     OUTPUT_SETTINGS,

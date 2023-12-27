@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from prep_pavenet.setup.config import (
+from prep_pavenet.common.config import (
     OUTPUT_PATH,
     OUTPUT_SETTINGS,
     PLACEMENT,

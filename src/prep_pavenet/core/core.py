@@ -5,8 +5,8 @@ import logging
 from prep_pavenet.controller.controller import ControllerConverter
 from prep_pavenet.links.devices import DeviceLinks
 from prep_pavenet.rsu.rsu import RsuConverter
-from prep_pavenet.setup.config import LOG_SETTINGS, Config
-from prep_pavenet.setup.logger import setup_logging
+from prep_pavenet.common.config import LOG_SETTINGS, Config
+from prep_pavenet.common.logger import setup_logging
 from prep_pavenet.vehicle.vehicle import VehicleConverter
 
 logger = logging.getLogger(__name__)

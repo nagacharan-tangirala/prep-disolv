@@ -9,7 +9,7 @@ from prep_pavenet.links import infra_tree
 from prep_pavenet.links.infra_tree import InfraTree
 from prep_pavenet.links.reader import InputReader
 from prep_pavenet.links.writer import LinksWriter
-from prep_pavenet.setup.config import (
+from prep_pavenet.common.config import (
     DURATION,
     LINK_SETTINGS,
     OUTPUT_PATH,
