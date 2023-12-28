@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import xml.etree.ElementTree as Et
 from pathlib import Path
+from pyproj import Transformer
 
 import numpy as np
 import pandas as pd
@@ -20,15 +21,31 @@ from prep_pavenet.common.config import END_TIME, ID_INIT, NETWORK_FILE, START_TI
 JUNCTION = "junction"
 
 
+def get_lat_lon(coord_x: str, coord_y: str) -> tuple[float, float]:
+    """Get the latitude and longitude from the coordinates."""
+    transformer = Transformer.from_crs(
+        crs_from="+proj=utm +zone=32 +ellps=WGS84 +datum=WGS84 +units=m",
+        crs_to="epsg:4326",
+    )
+    return transformer.transform(float(coord_x), float(coord_y))
+
+
 class JunctionData:
-    def __init__(self, junction_id: int, ns3_id: int, x: float, y: float) -> None:
+    def __init__(
+        self, junction_id: int, ns3_id: int, x: float, y: float, lat: float, lon: float
+    ) -> None:
         self.ns3_id = ns3_id
         self.id = junction_id
         self.x = x
         self.y = y
+        self.lat = lat
+        self.lon = lon
 
     def __repr__(self) -> str:
-        return f"JunctionData({self.id}, {self.ns3_id}, {self.x}, {self.y})"
+        return (
+            f"JunctionData("
+            f"{self.id}, {self.ns3_id}, {self.x}, {self.y}, {self.lat}, {self.lon})"
+        )
 
 
 class JunctionActivationData:
@@ -121,7 +138,15 @@ class JunctionPlacement:
         """Write the junction data to a file."""
         junction_df = pd.DataFrame(
             [
-                [0, junction.id, junction.ns3_id, junction.x, junction.y]
+                [
+                    0,
+                    junction.id,
+                    junction.ns3_id,
+                    junction.x,
+                    junction.y,
+                    junction.lat,
+                    junction.lon,
+                ]
                 for junction in junctions
             ],
             columns=RSU_COLUMNS,
@@ -143,9 +168,12 @@ class JunctionPlacement:
                 and item.attrib["type"] == "priority"
             ):
                 junction_id = self.id_init + junction_count
+                lat, lon = get_lat_lon(item.attrib[COORD_X], item.attrib[COORD_Y])
                 x = float(item.attrib[COORD_X]) - offset_x
                 y = float(item.attrib[COORD_Y]) - offset_y
-                junctions.append(JunctionData(junction_id, self.ns3_id_init, x, y))
+                junctions.append(
+                    JunctionData(junction_id, self.ns3_id_init, x, y, lat, lon)
+                )
                 junction_count += 1
                 self.ns3_id_init += 1
         return junctions
