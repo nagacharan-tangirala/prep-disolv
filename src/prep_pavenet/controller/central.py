@@ -12,6 +12,7 @@ from prep_pavenet.common.columns import (
 )
 from prep_pavenet.common.utils import get_center, get_offsets
 from prep_pavenet.common.config import END_TIME, ID_INIT, NETWORK_FILE, START_TIME
+from prep_pavenet.rsu.junction import get_lat_lon
 
 CENTRE = "center"
 
@@ -62,6 +63,7 @@ class CentralControllerPlacer:
         """Write the controller data to a file."""
         controller_id = self.id_init
         centers = get_center(self.sumo_net)
+        center_lat, center_lon = get_lat_lon(centers[0], centers[1])
         offsets = get_offsets(self.sumo_net)
         offset_x, offset_y = offsets[0], offsets[1]
         controller_df = pd.DataFrame(
@@ -72,6 +74,8 @@ class CentralControllerPlacer:
                     self.controller_id_init,
                     centers[0] - offset_x,
                     centers[1] - offset_y,
+                    center_lat,
+                    center_lon,
                 ]
             ],
             columns=CONTROLLER_COLUMNS,
