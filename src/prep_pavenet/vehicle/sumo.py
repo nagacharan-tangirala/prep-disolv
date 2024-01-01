@@ -112,7 +112,7 @@ class SumoConverter:
         vehicle_fcd_iter = iterparse(self.fcd_file, events=("start", "end"))
         for event, veh_ele in vehicle_fcd_iter:
             if event == "end" and veh_ele.tag == "timestep":
-                timestamp = int(float(veh_ele.attrib["time"]) * 1000)
+                timestamp = int(round(float(veh_ele.attrib["time"]), 1) * 10) * 100
                 logger.debug("Processing timestep %s", timestamp)
 
                 for vehicle_ele in veh_ele:
