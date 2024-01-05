@@ -5,7 +5,9 @@ import xml.etree.ElementTree as Et
 from pathlib import Path
 
 BOUNDARY = "convBoundary"
+OFFSETS = "netOffset"
 LOCATION = "location"
+PROJECTION = "projParameter"
 
 
 def get_offsets(sumo_net_file: Path) -> (float, float):
