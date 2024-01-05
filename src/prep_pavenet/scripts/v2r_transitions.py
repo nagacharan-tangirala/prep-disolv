@@ -3,9 +3,15 @@
 # links for each node, where the target changes from the previous row.
 # Instead of storing the entire trace file for each node, we only store the
 # links when the target changes.
+#
+# NS3 and Mosaic use different node IDs, so we need to convert the node IDs
+# to the correct format for each simulator. NS3 need parquet files, while
+# Mosaic needs a CSV file.
+# Paths are hard-coded, only scenario name is required as input.
 
 from pathlib import Path
 import pandas as pd
+import argparse
 
 
 class V2RTransitions:
@@ -38,10 +44,16 @@ class V2RTransitions:
 
 
 if __name__ == "__main__":
-    rsu_pos_file = Path(
-        "/mnt/hdd/workspace/pavenet/input/lehen/positions/roadside_units.parquet"
-    )
-    links_file = Path("/mnt/hdd/workspace/pavenet/input/lehen/links/v2r_links.parquet")
+    args = argparse.ArgumentParser()
+    args.add_argument("--scenario", type=str, required=True)
+    scenario = args.parse_args().scenario
+
+    input_path = Path("/mnt/hdd/workspace/pavenet/input/" + scenario)
+    rsu_pos_file = input_path / "positions" / "roadside_units.parquet"
+    links_file = input_path / "links" / "v2r_links.parquet"
+    print("Reading RSU data from", rsu_pos_file)
+    print("Reading links data from", links_file)
+
     links_df = pd.read_parquet(links_file)
     transitions = V2RTransitions(rsu_pos_file)
 
@@ -68,16 +80,14 @@ if __name__ == "__main__":
     node_mapping = transitions.get_mapping_with_offset()
     ns3_df["target_id"].replace(node_mapping, inplace=True)
 
-    ns3_df.to_parquet(
-        "/mnt/hdd/workspace/pavenet/input/lehen/links/v2r_transitions.parquet",
-        index=False,
-    )
+    output_file = input_path / "links" / "v2r_transitions.parquet"
+    print("Writing links data for NS3 to", output_file)
+    ns3_df.to_parquet(output_file, index=False)
 
     mosaic_df = filtered_df.copy()
     node_mapping = transitions.get_mapping_without_offset()
     mosaic_df["target_id"].replace(node_mapping, inplace=True)
-    mosaic_df.to_csv(
-        "/mnt/hdd/workspace/pavenet/input/lehen/links/v2r_transitions.csv",
-        index=False,
-        header=False,
-    )
+
+    link_transition_file = input_path / "links" / "v2r_transitions.csv"
+    print("Writing links data for Mosaic to", link_transition_file)
+    mosaic_df.to_csv(link_transition_file, index=False, header=False)
