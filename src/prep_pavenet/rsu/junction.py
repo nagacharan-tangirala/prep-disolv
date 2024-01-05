@@ -168,9 +168,9 @@ class JunctionPlacement:
                 and item.attrib["type"] == "priority"
             ):
                 junction_id = self.id_init + junction_count
-                lat, lon = get_lat_lon(item.attrib[COORD_X], item.attrib[COORD_Y])
                 x = float(item.attrib[COORD_X]) - offset_x
                 y = float(item.attrib[COORD_Y]) - offset_y
+                lat, lon = get_lat_lon(x, y, self.sumo_net)
                 junctions.append(
                     JunctionData(junction_id, self.ns3_id_init, x, y, lat, lon)
                 )
