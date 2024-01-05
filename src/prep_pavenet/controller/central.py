@@ -64,16 +64,14 @@ class CentralControllerPlacer:
         controller_id = self.id_init
         centers = get_center(self.sumo_net)
         center_lat, center_lon = get_lat_lon(centers[0], centers[1], self.sumo_net)
-        offsets = get_offsets(self.sumo_net)
-        offset_x, offset_y = offsets[0], offsets[1]
         controller_df = pd.DataFrame(
             [
                 [
                     0,
                     controller_id,
                     self.controller_id_init,
-                    centers[0] - offset_x,
-                    centers[1] - offset_y,
+                    centers[0],
+                    centers[1],
                     center_lat,
                     center_lon,
                 ]
