@@ -3,6 +3,7 @@ from pathlib import Path
 
 import pandas as pd
 from sklearn.neighbors import KDTree
+from tqdm import tqdm
 
 from prep_pavenet.common.columns import LINKS_FOLDER, LINK_COLUMNS
 from prep_pavenet.links import infra_tree
@@ -118,6 +119,13 @@ class DeviceLinks:
         v2v_links = pd.DataFrame(columns=LINK_COLUMNS)
 
         logger.debug("Looping from 0 to %d with step %d", self.duration, self.step)
+        progress_bar = tqdm(
+            total=self.duration,
+            unit="ts",
+            desc="Determining links for ts: ",
+            colour="blue",
+            ncols=90,
+        )
         for ts in range(0, self.duration, self.step):
             msg = f"Calculating links for time step {ts}"
             logger.info(msg)
@@ -167,6 +175,8 @@ class DeviceLinks:
                 self.v2v_writer.write_data(v2v_links)
                 v2v_links = pd.DataFrame(columns=LINK_COLUMNS)
 
+            progress_bar.update(self.step)
+
         self.v2r_writer.write_data(v2r_links)
         self.v2r_writer.close()
         self.r2v_writer.write_data(r2v_links)
@@ -174,4 +184,5 @@ class DeviceLinks:
         self.v2v_writer.write_data(v2v_links)
         self.v2v_writer.close()
 
+        progress_bar.close()
         self.trace_reader.close()
