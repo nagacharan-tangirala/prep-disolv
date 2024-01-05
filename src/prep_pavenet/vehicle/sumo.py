@@ -12,6 +12,8 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 import tqdm
 
+from typing import NamedTuple
+
 from prep_pavenet.common.columns import POSITIONS_FOLDER
 from prep_pavenet.common.utils import get_offsets
 from prep_pavenet.common.config import NETWORK_FILE, TRACE_FILE
@@ -25,13 +27,13 @@ NODE_ID = "node_id"
 COORD_X = "x"
 COORD_Y = "y"
 VELOCITY = "velocity"
-ROAD_ID = "road_id"
-SUB_ROAD_ID = "sub_road_id"
-LANE_ID = "lane_id"
+ROAD_DATA = "road_data"
 VEH_TYPE = "veh_type"
 
+
 # Composite road ID.
-road_info = namedtuple("road_info", ["road_id", "sub_road_id", "lane_id"])
+class road_info(NamedTuple):
+    road_data: str
 
 
 class FCDDataArrays:
@@ -42,9 +44,7 @@ class FCDDataArrays:
         self.x = np.array([], dtype=np.float64)
         self.y = np.array([], dtype=np.float64)
         self.velocity = np.array([], dtype=np.float64)
-        self.road_id = np.array([], dtype=np.int64)
-        self.sub_road_id = np.array([], dtype=np.int64)
-        self.lane_id = np.array([], dtype=np.int64)
+        self.road_data = np.array([], dtype=np.string_)
         self.veh_type = np.array([], dtype=str)
 
     def reset(self) -> None:
@@ -54,9 +54,7 @@ class FCDDataArrays:
         self.x = np.array([], dtype=np.float64)
         self.y = np.array([], dtype=np.float64)
         self.velocity = np.array([], dtype=np.float64)
-        self.road_id = np.array([], dtype=np.int64)
-        self.sub_road_id = np.array([], dtype=np.int64)
-        self.lane_id = np.array([], dtype=np.int64)
+        self.road_data = np.array([], dtype=np.string_)
         self.veh_type = np.array([], dtype=str)
 
 
@@ -78,6 +76,7 @@ class SumoConverter:
         self.offset_x, self.offset_y = offsets[0], offsets[1]
         self.unique_vehicle_count = 0
         self.parquet_file: Path = output_path
+        self.time_offset = -1
 
     def fcd_to_parquet(self) -> None:
         """Convert the FCD output from SUMO to a parquet file."""
@@ -105,7 +104,7 @@ class SumoConverter:
         progress_bar = tqdm.tqdm(
             total=len(root),
             unit="ts",
-            desc="Processing Vehicles at ts: ",
+            desc="Processing Vehicles for ts: ",
             colour="green",
             ncols=90,
         )
@@ -113,6 +112,9 @@ class SumoConverter:
         for event, veh_ele in vehicle_fcd_iter:
             if event == "end" and veh_ele.tag == "timestep":
                 timestamp = int(round(float(veh_ele.attrib["time"]), 1) * 10) * 100
+                if self.time_offset == -1:
+                    self.time_offset = timestamp
+                timestamp = timestamp - self.time_offset
                 logger.debug("Processing timestep %s", timestamp)
 
                 for vehicle_ele in veh_ele:
@@ -159,13 +161,8 @@ class SumoConverter:
         )
 
         fcd_arrays.veh_type = np.append(fcd_arrays.veh_type, vehicle_ele.attrib["type"])
-        road_data = _read_road_data(vehicle_ele.attrib["lane"])
-        road_data = _convert_road_data_to_int(road_data)
-        fcd_arrays.road_id = np.append(fcd_arrays.road_id, road_data.road_id)
-        fcd_arrays.sub_road_id = np.append(
-            fcd_arrays.sub_road_id, road_data.sub_road_id
-        )
-        fcd_arrays.lane_id = np.append(fcd_arrays.lane_id, road_data.lane_id)
+        road_data = vehicle_ele.attrib["lane"]
+        fcd_arrays.road_data = np.append(fcd_arrays.road_data, road_data)
         fcd_arrays.array_size += 1
         return fcd_arrays
 
@@ -185,45 +182,7 @@ def _build_fcd_schema() -> pa.Schema:
             pa.field(COORD_X, pa.float64()),
             pa.field(COORD_Y, pa.float64()),
             pa.field(VELOCITY, pa.float64()),
-            pa.field(ROAD_ID, pa.int64()),
-            pa.field(SUB_ROAD_ID, pa.int64()),
-            pa.field(LANE_ID, pa.int64()),
+            pa.field(ROAD_DATA, pa.string()),
             pa.field(VEH_TYPE, pa.string()),
         ]
     )
-
-
-def _convert_road_data_to_int(road_data: road_info) -> road_info:
-    """Convert the road data to integers."""
-    return road_info(
-        road_id=int(road_data.road_id),
-        sub_road_id=int(road_data.sub_road_id),
-        lane_id=int(road_data.lane_id),
-    )
-
-
-def _read_road_data(edge_data: str) -> road_info:
-    if ":" in edge_data:
-        return read_lane_data_with_colon(edge_data)
-    if "#" in edge_data:
-        return _read_lane_data_with_hash(edge_data)
-
-    road_data = road_info(road_id=edge_data, sub_road_id=0, lane_id=0)
-    if "_" in edge_data:
-        road_data.road_id, road_data.lane_id = edge_data.split("_")
-    return road_data
-
-
-def _read_lane_data_with_hash(edge_data: str) -> road_info:
-    road_id, lane_id = edge_data.split("_")
-    sub_road_id = road_id.split("#")[1]
-    road_id = road_id.split("#")[0]
-    return road_info(road_id=road_id, sub_road_id=sub_road_id, lane_id=lane_id)
-
-
-def read_lane_data_with_colon(edge_data: str) -> road_info:
-    edge_data = edge_data.split(":")[1]
-    lane_id = edge_data.split("_")[2]
-    sub_road_id = edge_data.split("_")[1]
-    road_id = edge_data.split("_")[0]
-    return road_info(road_id=road_id, sub_road_id=sub_road_id, lane_id=lane_id)
