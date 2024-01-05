@@ -175,7 +175,7 @@ class InfraTree:
         """
         infra_distances, infra_id_lists = self.tree.query(
             node_positions,
-            k=link_count + 1,
+            k=link_count,
             return_distance=True,
         )
 
