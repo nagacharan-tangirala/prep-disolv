@@ -15,16 +15,17 @@ from prep_pavenet.common.columns import (
     COORD_X,
     COORD_Y,
 )
-from prep_pavenet.common.utils import get_offsets
+from prep_pavenet.common.utils import get_offsets, get_projection
 from prep_pavenet.common.config import END_TIME, ID_INIT, NETWORK_FILE, START_TIME
 
 JUNCTION = "junction"
 
 
-def get_lat_lon(coord_x: str, coord_y: str) -> tuple[float, float]:
+def get_lat_lon(coord_x: str, coord_y: str, sumo_net: Path) -> tuple[float, float]:
     """Get the latitude and longitude from the coordinates."""
+    from_proj = get_projection(sumo_net)
     transformer = Transformer.from_crs(
-        crs_from="+proj=utm +zone=32 +ellps=WGS84 +datum=WGS84 +units=m",
+        crs_from=from_proj,
         crs_to="epsg:4326",
     )
     return transformer.transform(float(coord_x), float(coord_y))
