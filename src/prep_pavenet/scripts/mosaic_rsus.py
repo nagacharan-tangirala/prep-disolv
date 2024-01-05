@@ -5,13 +5,19 @@ import json
 
 import pandas as pd
 
+pavenet_scenario = "medium"
+mosaic_scenario = "DataHoseMedium"
+
 rsu_file = Path(
-    "/mnt/hdd/workspace/pavenet/input/lehen/positions/roadside_units.parquet"
+    "/mnt/hdd/workspace/pavenet/input/"
+    + pavenet_scenario
+    + "/positions/roadside_units.parquet"
 )
 rsu_df = pd.read_parquet(rsu_file)
 json_file = Path(
-    "/home/charan/intellij/eclipse-mosaic-23.1/scenarios/DataHoseSimple/mapping/"
-    "mapping_config_test.json"
+    "/home/charan/intellij/eclipse-mosaic-23.1/scenarios/"
+    + mosaic_scenario
+    + "/mapping/mapping_config.json"
 )
 
 out_data = {
