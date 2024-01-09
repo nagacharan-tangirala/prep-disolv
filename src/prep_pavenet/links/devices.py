@@ -113,7 +113,7 @@ class DeviceLinks:
 
     def _calculate_dynamic_links(self) -> None:
         """Calculate the links."""
-        df_size_limit = 100000
+        df_size_limit = 10000
         v2r_links = pd.DataFrame(columns=LINK_COLUMNS)
         r2v_links = pd.DataFrame(columns=LINK_COLUMNS)
         v2v_links = pd.DataFrame(columns=LINK_COLUMNS)

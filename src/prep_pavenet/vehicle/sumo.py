@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import logging
 import xml.etree.ElementTree as Et
-from collections import namedtuple
 from pathlib import Path
 from xml.etree.ElementTree import iterparse
 
@@ -123,7 +122,8 @@ class SumoConverter:
                     self.activation.update_activation(timestamp, vehicle_id)
                     fcd_arrays = self._read_vehicle_data(vehicle_ele, fcd_arrays)
 
-                    if fcd_arrays.array_size == 1000:
+                    if fcd_arrays.array_size == 10000:
+                        logger.debug("Writing fcd data to parquet at %s", timestamp)
                         fcd_data_df = pd.DataFrame(fcd_arrays.__dict__)
                         fcd_data_df = fcd_data_df.drop(columns=["array_size"])
                         output_writer.write_table(pa.Table.from_pandas(fcd_data_df))
