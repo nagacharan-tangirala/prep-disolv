@@ -3,9 +3,18 @@ from __future__ import annotations
 import logging
 
 from prep_pavenet.controller.controller import ControllerConverter
-from prep_pavenet.links.devices import DeviceLinks
+from prep_pavenet.links.all_links import DeviceLinks
 from prep_pavenet.rsu.rsu import RsuConverter
-from prep_pavenet.common.config import LOG_SETTINGS, Config
+from prep_pavenet.common.config import (
+    LOG_SETTINGS,
+    Config,
+    DATA_STEP_SETTINGS,
+    VEHICLE_DATA,
+    RSU_DATA,
+    LINK_DATA,
+    BASE_STATION_DATA,
+    CONTROLLER_DATA,
+)
 from prep_pavenet.common.logger import setup_logging
 from prep_pavenet.vehicle.vehicle import VehicleConverter
 
@@ -27,27 +36,40 @@ class Core:
     def _prepare_scenario(self) -> None:
         """Prepare the scenario."""
         total_node_count = 0
-        logger.info("Preparing the Vehicle Data")
-        vehicle_count = self._create_vehicle_data()
-        total_node_count += vehicle_count
-        vehicle_msg = f"Number of vehicles: {vehicle_count}"
-        logger.info(vehicle_msg)
+        if self.config.get(DATA_STEP_SETTINGS).get(VEHICLE_DATA):
+            logger.info("Preparing the Vehicle Data")
+            vehicle_count = self._create_vehicle_data()
+            total_node_count += vehicle_count
+            vehicle_msg = f"Number of vehicles: {vehicle_count}"
+            logger.info(vehicle_msg)
+        else:
+            logger.info("Skipping vehicle data")
 
-        logger.info("Preparing RSU data")
-        rsu_count = self._create_rsu_data(total_node_count)
-        total_node_count += rsu_count
-        rsu_msg = f"Number of RSUs: {rsu_count}"
-        logger.info(rsu_msg)
+        if self.config.get(DATA_STEP_SETTINGS).get(RSU_DATA):
+            logger.info("Preparing RSU data")
+            rsu_count = self._create_rsu_data(total_node_count)
+            total_node_count += rsu_count
+            rsu_msg = f"Number of RSUs: {rsu_count}"
+            logger.info(rsu_msg)
+        else:
+            logger.info("Skipping RSU data")
 
-        logger.info("Preparing Controller data")
-        self._create_controller_data(total_node_count)
+        if self.config.get(DATA_STEP_SETTINGS).get(CONTROLLER_DATA):
+            logger.info("Preparing Controller data")
+            self._create_controller_data(total_node_count)
+        else:
+            logger.info("Skipping Controller data")
 
-        logger.info("Preparing Base Station data")
-        self._create_base_station_data()
+        if self.config.get(DATA_STEP_SETTINGS).get(BASE_STATION_DATA):
+            logger.info("Preparing Base Station data")
+            self._create_base_station_data()
+        else:
+            logger.info("Skipping Base Station data")
+
+        if self.config.get(DATA_STEP_SETTINGS).get(LINK_DATA):
+            logger.info("Creating the links")
+            self._create_links()
         logger.info("Scenario is prepared")
-
-        logger.info("Creating the links")
-        self._create_links()
 
     def _create_vehicle_data(self) -> int:
         """Create the vehicle data."""

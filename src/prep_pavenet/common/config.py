@@ -11,6 +11,7 @@ from prep_pavenet.common.columns import (
 # Config keys.
 LOG_SETTINGS = "logging"
 TRAFFIC_SETTINGS = "traffic"
+DATA_STEP_SETTINGS = "data_steps"
 VEHICLE_SETTINGS = "vehicles"
 RSU_SETTINGS = "rsu"
 OUTPUT_SETTINGS = "output"
@@ -46,6 +47,13 @@ LOG_OVERWRITE = "log_overwrite"
 DURATION = "duration"
 STEP_SIZE = "step_size"
 STREAMING_TIME = "streaming_time"
+
+# Data step keys.
+VEHICLE_DATA = "vehicle_data"
+RSU_DATA = "rsu_data"
+CONTROLLER_DATA = "controller_data"
+BASE_STATION_DATA = "base_station_data"
+LINK_DATA = "link_data"
 
 
 def read_config_toml(config_toml: str) -> dict:
