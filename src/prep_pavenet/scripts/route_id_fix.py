@@ -1,3 +1,6 @@
+# Route ID fix for SUMO route files if the route IDs are not in integer format.
+# Usage: python route_id_fix.py --inputxml <input_file> --outputxml <output_file>
+
 import xml.etree.ElementTree as et
 
 import argparse
