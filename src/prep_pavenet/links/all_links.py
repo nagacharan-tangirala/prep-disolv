@@ -1,13 +1,14 @@
 import logging
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 from sklearn.neighbors import KDTree
 from tqdm import tqdm
 
 from prep_pavenet.common.columns import LINKS_FOLDER, LINK_COLUMNS
 from prep_pavenet.links import infra_tree
-from prep_pavenet.links.infra_tree import InfraTree
+from prep_pavenet.links.infra_tree import InfraTree, LinkDataArrays
 from prep_pavenet.links.reader import InputReader
 from prep_pavenet.links.writer import LinksWriter
 from prep_pavenet.common.config import (
@@ -113,10 +114,12 @@ class DeviceLinks:
 
     def _calculate_dynamic_links(self) -> None:
         """Calculate the links."""
-        df_size_limit = 10000
-        v2r_links = pd.DataFrame(columns=LINK_COLUMNS)
-        r2v_links = pd.DataFrame(columns=LINK_COLUMNS)
-        v2v_links = pd.DataFrame(columns=LINK_COLUMNS)
+        cache_size = 100000
+
+        # Create arrays for the links.
+        v2r_links = LinkDataArrays()
+        r2v_links = LinkDataArrays()
+        v2v_links = LinkDataArrays()
 
         logger.debug("Looping from 0 to %d with step %d", self.duration, self.step)
         progress_bar = tqdm(
@@ -124,7 +127,7 @@ class DeviceLinks:
             unit="ts",
             desc="Determining links for ts: ",
             colour="blue",
-            ncols=90,
+            ncols=100,
         )
         for ts in range(0, self.duration, self.step):
             msg = f"Calculating links for time step {ts}"
@@ -134,54 +137,71 @@ class DeviceLinks:
             logger.debug("Vehicle IDs: %s", vehicle_ids)
             if len(vehicle_ids) == 0:
                 continue
-            temp_df = self.rsu_tree.get_n2i_links_with_count(
+
+            v2r_link_arrays = self.rsu_tree.get_n2i_links_with_count(
                 vehicle_ids, veh_positions, ts, self.v2r_count
             )
-            v2r_links = (
-                temp_df
-                if v2r_links.empty
-                else pd.concat([v2r_links, temp_df], ignore_index=True)
+            v2r_links.time_step = np.append(
+                v2r_links.time_step, v2r_link_arrays.time_step
             )
+            v2r_links.node_id = np.append(v2r_links.node_id, v2r_link_arrays.node_id)
+            v2r_links.target_id = np.append(
+                v2r_links.target_id, v2r_link_arrays.target_id
+            )
+            v2r_links.distance = np.append(v2r_links.distance, v2r_link_arrays.distance)
+            v2r_links.array_size += v2r_link_arrays.array_size
 
             veh_tree = KDTree(veh_positions, leaf_size=20, metric="euclidean")
-            temp_df = self.rsu_tree.get_i2n_links_with_radius(
+
+            r2v_link_arrays = self.rsu_tree.get_i2n_links_with_radius(
                 vehicle_ids, veh_tree, ts, self.r2v_radius
             )
-            r2v_links = (
-                temp_df
-                if r2v_links.empty
-                else pd.concat([r2v_links, temp_df], ignore_index=True)
+
+            r2v_links.time_step = np.append(
+                r2v_links.time_step, r2v_link_arrays.time_step
             )
+            r2v_links.node_id = np.append(r2v_links.node_id, r2v_link_arrays.node_id)
+            r2v_links.target_id = np.append(
+                r2v_links.target_id, r2v_link_arrays.target_id
+            )
+            r2v_links.distance = np.append(r2v_links.distance, r2v_link_arrays.distance)
 
             if len(vehicle_ids) > 1:
-                temp_df = infra_tree.get_n2n_links_with_radius(
+                v2v_link_arrays = infra_tree.get_n2n_links_with_radius(
                     vehicle_ids, veh_positions, veh_tree, ts, self.v2v_radius
                 )
-                v2v_links = (
-                    temp_df
-                    if v2v_links.empty
-                    else pd.concat([v2v_links, temp_df], ignore_index=True)
+                v2v_links.time_step = np.append(
+                    v2v_links.time_step, v2v_link_arrays.time_step
+                )
+                v2v_links.node_id = np.append(
+                    v2v_links.node_id, v2v_link_arrays.node_id
+                )
+                v2v_links.target_id = np.append(
+                    v2v_links.target_id, v2v_link_arrays.target_id
+                )
+                v2v_links.distance = np.append(
+                    v2v_links.distance, v2v_link_arrays.distance
                 )
 
-            if len(v2r_links) > df_size_limit:
-                self.v2r_writer.write_data(v2r_links)
-                v2r_links = pd.DataFrame(columns=LINK_COLUMNS)
+            if v2r_links.array_size > cache_size:
+                self.v2r_writer.write_arrays(v2r_links)
+                v2r_links.reset()
 
-            if len(r2v_links) > df_size_limit:
-                self.r2v_writer.write_data(r2v_links)
-                r2v_links = pd.DataFrame(columns=LINK_COLUMNS)
+            if r2v_links.array_size > cache_size:
+                self.r2v_writer.write_arrays(r2v_links)
+                r2v_links.reset()
 
-            if len(v2v_links) > df_size_limit:
-                self.v2v_writer.write_data(v2v_links)
-                v2v_links = pd.DataFrame(columns=LINK_COLUMNS)
+            if v2v_links.array_size > cache_size:
+                self.v2v_writer.write_arrays(v2v_links)
+                v2v_links.reset()
 
             progress_bar.update(self.step)
 
-        self.v2r_writer.write_data(v2r_links)
+        self.v2r_writer.write_arrays(v2r_links)
         self.v2r_writer.close()
-        self.r2v_writer.write_data(r2v_links)
+        self.r2v_writer.write_arrays(r2v_links)
         self.r2v_writer.close()
-        self.v2v_writer.write_data(v2v_links)
+        self.v2v_writer.write_arrays(v2v_links)
         self.v2v_writer.close()
 
         progress_bar.close()

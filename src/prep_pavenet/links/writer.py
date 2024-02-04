@@ -5,6 +5,7 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 from prep_pavenet.common.columns import LINK_COLUMNS
+from prep_pavenet.links.infra_tree import LinkDataArrays
 
 
 class LinksWriter:
@@ -65,6 +66,21 @@ class LinksWriter:
         """
         table = pa.Table.from_pandas(links_data, schema=self._schema_links)
         self.parquet_writer.write_table(table)
+
+    def write_arrays(self, links_data: LinkDataArrays):
+        """
+        Write the data to the output file.
+
+        The data is initially converted to a pyarrow table.
+        The table is then written to the output file.
+
+        Parameters
+        ----------
+        links_data: LinkDataArrays
+            The output data.
+        """
+        table = pa.Table.from_pydict(links_data.__dict__, schema=self._schema_links)
+        self.parquet_writer.write_table(table, row_group_size=100000)
 
     def close(self):
         """Close the parquet writer."""
