@@ -18,13 +18,29 @@ from prep_pavenet.common.columns import (
 logger = logging.getLogger(__name__)
 
 
+class LinkDataArrays:
+    def __init__(self) -> None:
+        self.array_size = 0
+        self.time_step = np.array([], dtype=np.int64)
+        self.node_id = np.array([], dtype=np.int64)
+        self.target_id = np.array([], dtype=np.int64)
+        self.distance = np.array([], dtype=np.float64)
+
+    def reset(self) -> None:
+        self.array_size = 0
+        self.time_step = np.array([], dtype=np.int64)
+        self.node_id = np.array([], dtype=np.int64)
+        self.target_id = np.array([], dtype=np.int64)
+        self.distance = np.array([], dtype=np.float64)
+
+
 def get_n2n_links_with_count(
     node_ids: np.ndarray,
     node_positions: np.ndarray,
     node_tree: KDTree,
     time_step: int,
     link_count: int,
-) -> pd.DataFrame:
+) -> LinkDataArrays:
     """Get the infrastructure links for the given input positions.
 
     Parameters
@@ -42,8 +58,8 @@ def get_n2n_links_with_count(
 
     Returns
     -------
-    pd.DataFrame
-        The dataframe containing the v2r links.
+    LinkDataArrays
+        The arrays containing the links.
     """
     node_distances, node_id_lists = node_tree.query(
         node_positions,
@@ -51,8 +67,8 @@ def get_n2n_links_with_count(
         return_distance=True,
     )
 
-    return convert_query_to_df(
-        node_ids, node_ids, node_distances, node_id_lists, time_step
+    return convert_query_to_arrays(
+        node_ids, node_ids, node_distances, node_id_lists, time_step, same_type=True
     )
 
 
@@ -62,7 +78,7 @@ def get_n2n_links_with_radius(
     node_tree: KDTree,
     time_step: int,
     radius: float,
-) -> pd.DataFrame:
+) -> LinkDataArrays:
     """Get the infrastructure links for the given input positions.
 
     Parameters
@@ -81,7 +97,7 @@ def get_n2n_links_with_radius(
     Returns
     -------
     pd.DataFrame
-        The dataframe containing the v2r links.
+        The dataframe containing the links.
     """
     node_id_lists, node_distances = node_tree.query_radius(
         node_positions,
@@ -90,17 +106,52 @@ def get_n2n_links_with_radius(
     )
 
     # Source and target ids are the same because are finding n2n links.
-    n2n_df = convert_query_to_df(
-        node_ids, node_ids, node_distances, node_id_lists, time_step
+    return convert_query_to_arrays(
+        node_ids, node_ids, node_distances, node_id_lists, time_step, same_type=True
     )
 
-    # Remove links to self.
-    return n2n_df[n2n_df[NODE_ID] != n2n_df[TARGET_ID]]
+
+def convert_query_to_arrays(
+    source_ids,
+    target_ids,
+    target_distance_lists,
+    target_idx_lists,
+    time_step,
+    same_type=False,
+) -> LinkDataArrays:
+    """Convert the query results to arrays."""
+    link_data_arrays = LinkDataArrays()
+    for target_idx_list, target_distance_list, source_id in zip(
+        target_idx_lists, target_distance_lists, source_ids
+    ):
+        target_id_arr = np.array([target_ids[idx] for idx in target_idx_list])
+        dist_arr = np.array(target_distance_list)
+        time_step_arr = np.array([time_step] * len(target_id_arr))
+        node_arr = np.array([source_id] * len(target_id_arr))
+
+        # Remove links to self.
+        if same_type:
+            source_id_arr_copy = node_arr.copy()
+            dist_arr = dist_arr[target_id_arr != node_arr]
+            time_step_arr = time_step_arr[target_id_arr != node_arr]
+            node_arr = node_arr[target_id_arr != source_id_arr_copy]
+            target_id_arr = target_id_arr[target_id_arr != source_id_arr_copy]
+
+        link_data_arrays.time_step = np.append(
+            link_data_arrays.time_step, time_step_arr
+        )
+        link_data_arrays.node_id = np.append(link_data_arrays.node_id, node_arr)
+        link_data_arrays.target_id = np.append(
+            link_data_arrays.target_id, target_id_arr
+        )
+        link_data_arrays.distance = np.append(link_data_arrays.distance, dist_arr)
+        link_data_arrays.array_size += len(target_id_arr)
+    return link_data_arrays
 
 
 def convert_query_to_df(
     source_ids, target_ids, target_distance_lists, target_idx_lists, time_step
-):
+) -> pd.DataFrame:
     """Convert the query results to a dataframe."""
     links_df = pd.DataFrame(columns=LINK_COLUMNS)
     for target_idx_list, target_distance_list, source_id in zip(
@@ -153,7 +204,7 @@ class InfraTree:
         node_positions: np.ndarray,
         time_step: int,
         link_count: int,
-    ) -> pd.DataFrame:
+    ) -> LinkDataArrays:
         """
         Get the infrastructure links for the given input positions.
 
@@ -170,8 +221,8 @@ class InfraTree:
 
         Returns
         -------
-        pd.DataFrame
-            The dataframe containing the v2r links.
+        LinkDataArrays
+            The arrays containing the links.
         """
         infra_distances, infra_id_lists = self.tree.query(
             node_positions,
@@ -179,7 +230,7 @@ class InfraTree:
             return_distance=True,
         )
 
-        return convert_query_to_df(
+        return convert_query_to_arrays(
             node_ids, self.infra_ids, infra_distances, infra_id_lists, time_step
         )
 
@@ -189,7 +240,7 @@ class InfraTree:
         node_positions: np.ndarray,
         time_step: int,
         radius: float,
-    ) -> pd.DataFrame:
+    ) -> LinkDataArrays:
         """
         Get the infrastructure links for the given input positions.
 
@@ -206,8 +257,8 @@ class InfraTree:
 
         Returns
         -------
-        pd.DataFrame
-            The dataframe containing the v2r links.
+        LinkDataArrays
+            The arrays containing the links.
         """
         infra_id_lists, infra_distances = self.tree.query_radius(
             node_positions,
@@ -215,7 +266,7 @@ class InfraTree:
             return_distance=True,
         )
 
-        return convert_query_to_df(
+        return convert_query_to_arrays(
             node_ids, self.infra_ids, infra_distances, infra_id_lists, time_step
         )
 
@@ -225,7 +276,7 @@ class InfraTree:
         node_tree: KDTree,
         time_step: int,
         link_count: int,
-    ) -> pd.DataFrame:
+    ) -> LinkDataArrays:
         """Get the infrastructure links for the given input positions.
 
         Parameters
@@ -241,8 +292,8 @@ class InfraTree:
 
         Returns
         -------
-        pd.DataFrame
-            The dataframe containing the v2r links.
+        LinkDataArrays
+            The arrays containing the links.
         """
         node_distances, node_id_lists = node_tree.query(
             self.positions,
@@ -250,7 +301,7 @@ class InfraTree:
             return_distance=True,
         )
 
-        return convert_query_to_df(
+        return convert_query_to_arrays(
             self.infra_ids, node_ids, node_distances, node_id_lists, time_step
         )
 
@@ -260,7 +311,7 @@ class InfraTree:
         node_tree: KDTree,
         time_step: int,
         radius: float,
-    ) -> pd.DataFrame:
+    ) -> LinkDataArrays:
         """Get the infrastructure links for the given input positions.
 
         Parameters
@@ -276,8 +327,8 @@ class InfraTree:
 
         Returns
         -------
-        pd.DataFrame
-            The dataframe containing the i2n links.
+        LinkDataArrays
+            The arrays containing the links.
         """
         node_id_lists, node_distances = node_tree.query_radius(
             self.positions,
@@ -285,7 +336,7 @@ class InfraTree:
             return_distance=True,
         )
 
-        return convert_query_to_df(
+        return convert_query_to_arrays(
             self.infra_ids, node_ids, node_distances, node_id_lists, time_step
         )
 
@@ -300,7 +351,7 @@ class InfraTree:
         Returns
         -------
         pd.DataFrame
-            The dataframe containing the i2i links.
+            The dataframe containing the links.
         """
         infra_distances, infra_id_lists = self.tree.query(
             self.positions,
@@ -308,35 +359,9 @@ class InfraTree:
             return_distance=True,
         )
 
-        link_df = convert_query_to_df(
+        return convert_query_to_df(
             self.infra_ids, self.infra_ids, infra_distances, infra_id_lists, 0
         )
-        return link_df[link_df[NODE_ID] != link_df[TARGET_ID]]
-
-    def get_i2i_links_of_radius(self, radius: float) -> pd.DataFrame:
-        """Get the infrastructure links of given radius.
-
-        Parameters
-        ----------
-        radius: float
-            The radius to be used for the search.
-
-        Returns
-        -------
-        pd.DataFrame
-            The dataframe containing the i2i links.
-        """
-        # Get the nearest infrastructure positions.
-        infra_id_lists, infra_distances = self.tree.query_radius(
-            self.positions,
-            r=radius,
-            return_distance=True,
-        )
-
-        i2i_df = convert_query_to_df(
-            self.infra_ids, self.infra_ids, infra_distances, infra_id_lists, 0
-        )
-        return i2i_df[i2i_df[NODE_ID] != i2i_df[TARGET_ID]]
 
     def get_i2_other_i_links_with_radius(
         self,
@@ -361,7 +386,7 @@ class InfraTree:
         Returns
         -------
         pd.DataFrame
-            The dataframe containing the v2r links.
+            The dataframe containing the links.
         """
         infra_id_lists, infra_distances = other_infra_tree.query_radius(
             self.positions,
