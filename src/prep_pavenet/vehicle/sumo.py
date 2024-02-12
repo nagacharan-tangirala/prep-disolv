@@ -30,11 +30,6 @@ ROAD_DATA = "road_data"
 VEH_TYPE = "veh_type"
 
 
-# Composite road ID.
-class road_info(NamedTuple):
-    road_data: str
-
-
 class FCDDataArrays:
     def __init__(self) -> None:
         self.array_size = 0
@@ -63,6 +58,7 @@ class SumoConverter:
         trace_config: dict,
         _vehicle_config: dict,
         config_path: Path,
+        duration: int,
         output_path: Path,
     ) -> None:
         """The constructor of the SumoConverter class."""
@@ -74,6 +70,7 @@ class SumoConverter:
         offsets = get_offsets(self.net_file)
         self.offset_x, self.offset_y = offsets[0], offsets[1]
         self.unique_vehicle_count = 0
+        self.duration = duration
         self.parquet_file: Path = output_path
         self.time_offset = -1
 
@@ -96,12 +93,11 @@ class SumoConverter:
 
     def _convert_fcd_to_parquet(self) -> None:
         """Convert the FCD output from SUMO to a parquet file."""
-        root = Et.parse(self.fcd_file).getroot()
         output_writer = _get_output_writer(self.parquet_file)
         fcd_arrays: FCDDataArrays = FCDDataArrays()
 
         progress_bar = tqdm.tqdm(
-            total=len(root),
+            total=int(self.duration / 1000),
             unit="ts",
             desc="Processing Vehicles for ts: ",
             colour="green",

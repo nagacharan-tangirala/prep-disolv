@@ -26,6 +26,7 @@ class VehicleConverter:
                 self.config.get(TRAFFIC_SETTINGS),
                 self.config.get(VEHICLE_SETTINGS),
                 self.config.path,
+                self.config.get(SIMULATION_SETTINGS)[DURATION],
                 output_path,
             )
             sumo_converter.fcd_to_parquet()
