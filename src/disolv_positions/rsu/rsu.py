@@ -26,9 +26,7 @@ class RsuConverter:
                 from disolv_positions.rsu.junction import JunctionPlacement
 
                 rsu_placement = JunctionPlacement(
-                    self.config.get(TRAFFIC_SETTINGS),
-                    self.config.get(RSU_SETTINGS),
-                    self.config.path,
+                    self.config,
                     output_path,
                     rsu_id_init,
                 )

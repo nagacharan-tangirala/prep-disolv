@@ -16,7 +16,8 @@ from disolv_positions.common.columns import (
     COORD_Y,
 )
 from disolv_positions.common.utils import get_offsets, get_projection
-from disolv_positions.common.config import END_TIME, ID_INIT, NETWORK_FILE, START_TIME
+from disolv_positions.common.config import ID_INIT, NETWORK_FILE, START_TIME, \
+    RSU_SETTINGS, TRAFFIC_SETTINGS, SIMULATION_SETTINGS, Config, DURATION
 
 JUNCTION = "junction"
 
@@ -67,20 +68,18 @@ class JunctionActivationData:
 class JunctionPlacement:
     def __init__(
         self,
-        trace_config: dict,
-        rsu_config: dict,
-        config_path: Path,
+        config: Config,
         output_path: Path,
         ns3_id_init: int,
     ):
         """The constructor of the JunctionPlacement class."""
         self.output_path = output_path
-        self.config_path = config_path
-        self.start_time = rsu_config[START_TIME]
-        self.end_time = rsu_config[END_TIME]
-        self.id_init = rsu_config[ID_INIT]
+        self.config_path = config.path
+        self.start_time = config.get(RSU_SETTINGS)[START_TIME]
+        self.end_time = config.get(SIMULATION_SETTINGS)[DURATION]
+        self.id_init = config.get(RSU_SETTINGS)[ID_INIT]
         self.ns3_id_init = ns3_id_init
-        self.sumo_net = config_path / trace_config[NETWORK_FILE]
+        self.sumo_net = self.config_path / config.get(TRAFFIC_SETTINGS)[NETWORK_FILE]
         self.rsu_count = 0
         self.parquet_file = (
             self.output_path / POSITIONS_FOLDER / "roadside_units.parquet"

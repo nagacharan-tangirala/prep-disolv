@@ -30,9 +30,7 @@ class ControllerConverter:
         output_path = self.config.path / self.config.get(OUTPUT_SETTINGS)[OUTPUT_PATH]
         if self.config.get(CONTROLLER_SETTINGS)[PLACEMENT] == CENTER:
             controller_placer = CentralControllerPlacer(
-                self.config.get(TRAFFIC_SETTINGS),
-                self.config.get(CONTROLLER_SETTINGS),
-                self.config.path,
+                self.config,
                 output_path,
                 controller_id_init,
             )

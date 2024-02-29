@@ -10,8 +10,9 @@ from disolv_positions.common.columns import (
     CONTROLLER_COLUMNS,
     POSITIONS_FOLDER,
 )
-from disolv_positions.common.utils import get_center, get_offsets
-from disolv_positions.common.config import END_TIME, ID_INIT, NETWORK_FILE, START_TIME
+from disolv_positions.common.utils import get_center
+from disolv_positions.common.config import DURATION, ID_INIT, NETWORK_FILE, START_TIME, \
+    Config, CONTROLLER_SETTINGS, SIMULATION_SETTINGS, TRAFFIC_SETTINGS
 from disolv_positions.rsu.junction import get_lat_lon
 
 CENTRE = "center"
@@ -20,19 +21,17 @@ CENTRE = "center"
 class CentralControllerPlacer:
     def __init__(
         self,
-        trace_config: dict,
-        cont_config: dict,
-        config_path: Path,
+        config: Config,
         output_path: Path,
         controller_id_init: int,
     ) -> None:
         """The constructor of the CentralControllerPlacer class."""
         self.output_path: Path = output_path
-        self.config_path: Path = config_path
-        self.start_time: int = cont_config[START_TIME]
-        self.end_time: int = cont_config[END_TIME]
-        self.id_init: int = cont_config[ID_INIT]
-        self.sumo_net: Path = config_path / trace_config[NETWORK_FILE]
+        self.config_path: Path = config.path
+        self.start_time: int = config.get(CONTROLLER_SETTINGS)[START_TIME]
+        self.id_init: int = config.get(CONTROLLER_SETTINGS)[ID_INIT]
+        self.end_time: int = config.get(SIMULATION_SETTINGS)[DURATION]
+        self.sumo_net: Path = self.config_path / config.get(TRAFFIC_SETTINGS)[NETWORK_FILE]
         self.controller_id_init = controller_id_init
         self.controller_file = (
             self.output_path / POSITIONS_FOLDER / "controllers.parquet"
