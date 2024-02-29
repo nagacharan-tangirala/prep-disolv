@@ -35,7 +35,6 @@ OUTPUT_PATH = "output_path"
 # RSU keys.
 PLACEMENT = "placement"
 START_TIME = "start_time"
-END_TIME = "end_time"
 
 # Logging keys.
 LOG_LEVEL = "log_level"
@@ -44,14 +43,6 @@ LOG_OVERWRITE = "log_overwrite"
 # Simulation keys.
 DURATION = "duration"
 STEP_SIZE = "step_size"
-STREAMING_TIME = "streaming_time"
-
-# Data step keys.
-VEHICLE_DATA = "vehicle_data"
-RSU_DATA = "rsu_data"
-CONTROLLER_DATA = "controller_data"
-BASE_STATION_DATA = "base_station_data"
-LINK_DATA = "link_data"
 
 
 def read_config_toml(config_toml: str) -> dict:
