@@ -4,7 +4,7 @@ import argparse
 import sys
 import time
 
-from prep_pavenet.core.core import Core
+from disolv_positions.core.core import Core
 
 
 def main():
