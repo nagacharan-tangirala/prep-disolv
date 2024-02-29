@@ -15,7 +15,8 @@ from typing import NamedTuple
 
 from disolv_positions.common.columns import POSITIONS_FOLDER
 from disolv_positions.common.utils import get_offsets
-from disolv_positions.common.config import NETWORK_FILE, TRACE_FILE
+from disolv_positions.common.config import NETWORK_FILE, TRACE_FILE, Config, \
+    TRAFFIC_SETTINGS, VEHICLE_SETTINGS, SIMULATION_SETTINGS, DURATION
 from disolv_positions.vehicle.veh_activations import VehicleActivation
 
 logger = logging.getLogger(__name__)
@@ -55,22 +56,20 @@ class FCDDataArrays:
 class SumoConverter:
     def __init__(
         self,
-        trace_config: dict,
-        _vehicle_config: dict,
-        config_path: Path,
-        duration: int,
+        config: Config,
         output_path: Path,
     ) -> None:
         """The constructor of the SumoConverter class."""
         self.output_path = output_path
-        self.config_path = config_path
+        self.config_path = config.path
         self.activation = VehicleActivation(output_path)
-        self.fcd_file = self.config_path / trace_config[TRACE_FILE]
-        self.net_file = self.config_path / trace_config[NETWORK_FILE]
+        self.fcd_file = self.config_path / config.get(TRAFFIC_SETTINGS)[TRACE_FILE]
+        self.net_file = self.config_path / config.get(TRAFFIC_SETTINGS)[NETWORK_FILE]
         offsets = get_offsets(self.net_file)
         self.offset_x, self.offset_y = offsets[0], offsets[1]
         self.unique_vehicle_count = 0
-        self.duration = duration
+        self.duration = config.get(SIMULATION_SETTINGS)[DURATION]
+        self.step_size = config.get(SIMULATION_SETTINGS)[DURATION]
         self.parquet_file: Path = output_path
         self.time_offset = -1
 
@@ -97,11 +96,11 @@ class SumoConverter:
         fcd_arrays: FCDDataArrays = FCDDataArrays()
 
         progress_bar = tqdm.tqdm(
-            total=int(self.duration / 1000),
+            total=int(self.duration / self.step_size),
             unit="ts",
             desc="Processing Vehicles for ts: ",
             colour="green",
-            ncols=90,
+            ncols=120,
         )
         vehicle_fcd_iter = iterparse(self.fcd_file, events=("start", "end"))
         for event, veh_ele in vehicle_fcd_iter:

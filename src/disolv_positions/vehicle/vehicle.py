@@ -23,10 +23,7 @@ class VehicleConverter:
         output_path = self.config.path / self.config.get(OUTPUT_SETTINGS)[OUTPUT_PATH]
         if self.config.get(VEHICLE_SETTINGS)[SIMULATOR] == SUMO:
             sumo_converter = SumoConverter(
-                self.config.get(TRAFFIC_SETTINGS),
-                self.config.get(VEHICLE_SETTINGS),
-                self.config.path,
-                self.config.get(SIMULATION_SETTINGS)[DURATION],
+                self.config,
                 output_path,
             )
             sumo_converter.fcd_to_parquet()
