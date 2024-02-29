@@ -4,15 +4,15 @@ from pathlib import Path
 
 import pandas as pd
 
-from prep_pavenet.common.columns import (
+from disolv_positions.common.columns import (
     ACTIVATION_COLUMNS,
     ACTIVATIONS_FOLDER,
     CONTROLLER_COLUMNS,
     POSITIONS_FOLDER,
 )
-from prep_pavenet.common.utils import get_center, get_offsets
-from prep_pavenet.common.config import END_TIME, ID_INIT, NETWORK_FILE, START_TIME
-from prep_pavenet.rsu.junction import get_lat_lon
+from disolv_positions.common.utils import get_center, get_offsets
+from disolv_positions.common.config import END_TIME, ID_INIT, NETWORK_FILE, START_TIME
+from disolv_positions.rsu.junction import get_lat_lon
 
 CENTRE = "center"
 

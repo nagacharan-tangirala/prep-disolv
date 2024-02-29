@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from prep_pavenet.common.config import (
+from disolv_positions.common.config import (
     OUTPUT_PATH,
     OUTPUT_SETTINGS,
     PLACEMENT,
@@ -23,7 +23,7 @@ class RsuConverter:
         if self.config.get(RSU_SETTINGS) is not None:
             rsu_placement_type = self.config.get(RSU_SETTINGS)[PLACEMENT]
             if rsu_placement_type == "junction":
-                from prep_pavenet.rsu.junction import JunctionPlacement
+                from disolv_positions.rsu.junction import JunctionPlacement
 
                 rsu_placement = JunctionPlacement(
                     self.config.get(TRAFFIC_SETTINGS),

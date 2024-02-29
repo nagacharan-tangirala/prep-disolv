@@ -13,10 +13,10 @@ import tqdm
 
 from typing import NamedTuple
 
-from prep_pavenet.common.columns import POSITIONS_FOLDER
-from prep_pavenet.common.utils import get_offsets
-from prep_pavenet.common.config import NETWORK_FILE, TRACE_FILE
-from prep_pavenet.vehicle.veh_activations import VehicleActivation
+from disolv_positions.common.columns import POSITIONS_FOLDER
+from disolv_positions.common.utils import get_offsets
+from disolv_positions.common.config import NETWORK_FILE, TRACE_FILE
+from disolv_positions.vehicle.veh_activations import VehicleActivation
 
 logger = logging.getLogger(__name__)
 

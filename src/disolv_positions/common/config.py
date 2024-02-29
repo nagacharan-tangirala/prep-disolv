@@ -2,9 +2,8 @@ from pathlib import Path
 
 import toml
 
-from prep_pavenet.common.columns import (
+from disolv_positions.common.columns import (
     ACTIVATIONS_FOLDER,
-    LINKS_FOLDER,
     POSITIONS_FOLDER,
 )
 
@@ -17,7 +16,6 @@ RSU_SETTINGS = "rsu"
 OUTPUT_SETTINGS = "output"
 CONTROLLER_SETTINGS = "controller"
 SIMULATION_SETTINGS = "simulation"
-LINK_SETTINGS = "links"
 
 # Common keys.
 ID_INIT = "id_init"
@@ -91,7 +89,6 @@ class Config:
 
         output_path.mkdir(parents=True, exist_ok=True)
         Path.mkdir(output_path / ACTIVATIONS_FOLDER, exist_ok=True)
-        Path.mkdir(output_path / LINKS_FOLDER, exist_ok=True)
         Path.mkdir(output_path / POSITIONS_FOLDER, exist_ok=True)
 
     def get(self, key: str) -> dict:

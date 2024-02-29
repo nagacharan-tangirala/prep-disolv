@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import logging
 
-from prep_pavenet.common.config import *
-from prep_pavenet.vehicle.sumo import SumoConverter
+from disolv_positions.common.config import *
+from disolv_positions.vehicle.sumo import SumoConverter
 
 logger = logging.getLogger(__name__)
 

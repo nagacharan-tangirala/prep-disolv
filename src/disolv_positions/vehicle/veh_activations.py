@@ -5,7 +5,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from prep_pavenet.common.columns import ACTIVATIONS_FOLDER, ACTIVATION_COLUMNS
+from disolv_positions.common.columns import ACTIVATIONS_FOLDER, ACTIVATION_COLUMNS
 
 
 class ActivationData:

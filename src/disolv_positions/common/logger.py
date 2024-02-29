@@ -9,7 +9,7 @@ LOG_FILE = "log_file"
 LOG_LEVEL = "log_level"
 LOG_OVERWRITE = "log_overwrite"
 
-DEFAULT_LOG_FILE = "prep_pavenet.log"
+DEFAULT_LOG_FILE = "disolv_positions.log"
 DEFAULT_LOG_LEVEL = "INFO"
 DEFAULT_LOG_OVERWRITE = False
 

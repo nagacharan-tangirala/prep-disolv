@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import logging
 
-from prep_pavenet.controller.central import CentralControllerPlacer
-from prep_pavenet.common.config import (
+from disolv_positions.controller.central import CentralControllerPlacer
+from disolv_positions.common.config import (
     CONTROLLER_SETTINGS,
     OUTPUT_PATH,
     OUTPUT_SETTINGS,

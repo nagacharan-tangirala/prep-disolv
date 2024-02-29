@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import logging
 
-from prep_pavenet.controller.controller import ControllerConverter
-from prep_pavenet.links.all_links import DeviceLinks
-from prep_pavenet.rsu.rsu import RsuConverter
-from prep_pavenet.common.config import (
+from disolv_positions.controller.controller import ControllerConverter
+from disolv_positions.links.all_links import DeviceLinks
+from disolv_positions.rsu.rsu import RsuConverter
+from disolv_positions.common.config import (
     LOG_SETTINGS,
     Config,
     DATA_STEP_SETTINGS,
@@ -15,8 +15,8 @@ from prep_pavenet.common.config import (
     BASE_STATION_DATA,
     CONTROLLER_DATA,
 )
-from prep_pavenet.common.logger import setup_logging
-from prep_pavenet.vehicle.vehicle import VehicleConverter
+from disolv_positions.common.logger import setup_logging
+from disolv_positions.vehicle.vehicle import VehicleConverter
 
 logger = logging.getLogger(__name__)
 
@@ -66,9 +66,6 @@ class Core:
         else:
             logger.info("Skipping Base Station data")
 
-        if self.config.get(DATA_STEP_SETTINGS).get(LINK_DATA):
-            logger.info("Creating the links")
-            self._create_links()
         logger.info("Scenario is prepared")
 
     def _create_vehicle_data(self) -> int:
@@ -94,14 +91,3 @@ class Core:
 
     def _create_base_station_data(self) -> None:
         """Create the base station data."""
-
-    def _create_links(self) -> None:
-        """Create the links."""
-        logger.info("Creating the links")
-        assert self.vehicle_file is not None
-        assert self.rsu_file is not None
-        assert self.controller_file is not None
-        device_links = DeviceLinks(
-            self.vehicle_file, self.rsu_file, self.controller_file, self.config
-        )
-        device_links.create_all_links()

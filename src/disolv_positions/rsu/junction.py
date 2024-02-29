@@ -7,7 +7,7 @@ from pyproj import Transformer
 import numpy as np
 import pandas as pd
 
-from prep_pavenet.common.columns import (
+from disolv_positions.common.columns import (
     POSITIONS_FOLDER,
     ACTIVATIONS_FOLDER,
     RSU_COLUMNS,
@@ -15,8 +15,8 @@ from prep_pavenet.common.columns import (
     COORD_X,
     COORD_Y,
 )
-from prep_pavenet.common.utils import get_offsets, get_projection
-from prep_pavenet.common.config import END_TIME, ID_INIT, NETWORK_FILE, START_TIME
+from disolv_positions.common.utils import get_offsets, get_projection
+from disolv_positions.common.config import END_TIME, ID_INIT, NETWORK_FILE, START_TIME
 
 JUNCTION = "junction"
 
