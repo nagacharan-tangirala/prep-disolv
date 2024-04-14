@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 # Trace output keys.
 TIME_STEP = "time_step"
-NODE_ID = "node_id"
+AGENT_ID = "agent_id"
 COORD_X = "x"
 COORD_Y = "y"
 VELOCITY = "velocity"
@@ -35,7 +35,7 @@ class FCDDataArrays:
     def __init__(self) -> None:
         self.array_size = 0
         self.time_step = np.array([], dtype=np.int64)
-        self.node_id = np.array([], dtype=np.int64)
+        self.agent_id = np.array([], dtype=np.int64)
         self.x = np.array([], dtype=np.float64)
         self.y = np.array([], dtype=np.float64)
         self.velocity = np.array([], dtype=np.float64)
@@ -45,7 +45,7 @@ class FCDDataArrays:
     def reset(self) -> None:
         self.array_size = 0
         self.time_step = np.array([], dtype=np.int64)
-        self.node_id = np.array([], dtype=np.int64)
+        self.agent_id = np.array([], dtype=np.int64)
         self.x = np.array([], dtype=np.float64)
         self.y = np.array([], dtype=np.float64)
         self.velocity = np.array([], dtype=np.float64)
@@ -142,8 +142,8 @@ class SumoConverter:
         self, vehicle_ele: Et.Element, fcd_arrays: FCDDataArrays
     ) -> FCDDataArrays:
         """Read the vehicle data from XML element and add it to FCD arrays."""
-        fcd_arrays.node_id = np.append(
-            fcd_arrays.node_id, int(vehicle_ele.attrib["id"])
+        fcd_arrays.agent_id = np.append(
+            fcd_arrays.agent_id, int(vehicle_ele.attrib["id"])
         )
         fcd_arrays.x = np.append(
             fcd_arrays.x, float(vehicle_ele.attrib["x"]) - self.offset_x
@@ -173,7 +173,7 @@ def _build_fcd_schema() -> pa.Schema:
     return pa.schema(
         [
             pa.field(TIME_STEP, pa.int64()),
-            pa.field(NODE_ID, pa.int64()),
+            pa.field(AGENT_ID, pa.int64()),
             pa.field(COORD_X, pa.float64()),
             pa.field(COORD_Y, pa.float64()),
             pa.field(VELOCITY, pa.float64()),

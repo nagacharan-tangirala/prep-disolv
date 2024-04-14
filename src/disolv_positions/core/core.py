@@ -28,21 +28,21 @@ class Core:
 
     def _prepare_scenario(self) -> None:
         """Prepare the scenario."""
-        total_node_count = 0
+        total_agent_count = 0
         logger.info("Preparing the Vehicle Data")
         vehicle_count = self._create_vehicle_data()
-        total_node_count += vehicle_count
+        total_agent_count += vehicle_count
         vehicle_msg = f"Number of vehicles: {vehicle_count}"
         logger.info(vehicle_msg)
 
         logger.info("Preparing RSU data")
-        rsu_count = self._create_rsu_data(total_node_count)
-        total_node_count += rsu_count
+        rsu_count = self._create_rsu_data(total_agent_count)
+        total_agent_count += rsu_count
         rsu_msg = f"Number of RSUs: {rsu_count}"
         logger.info(rsu_msg)
 
         logger.info("Preparing Controller data")
-        self._create_controller_data(total_node_count)
+        self._create_controller_data(total_agent_count)
 
         logger.info("Preparing Base Station data")
         self._create_base_station_data()

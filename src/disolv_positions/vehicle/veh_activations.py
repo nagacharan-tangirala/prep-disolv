@@ -9,9 +9,9 @@ from disolv_positions.common.columns import ACTIVATIONS_FOLDER, ACTIVATION_COLUM
 
 
 class ActivationData:
-    def __init__(self, node_id: int) -> None:
-        self.id = node_id
-        self.ns3_id = node_id
+    def __init__(self, agent_id: int) -> None:
+        self.id = agent_id
+        self.ns3_id = agent_id
         self.start_times: list[int] = []
         self.end_times: list[int] = []
         self.index: int = -1

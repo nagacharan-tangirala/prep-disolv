@@ -115,13 +115,13 @@ class JunctionPlacement:
         activation_df = pd.DataFrame(columns=ACTIVATION_COLUMNS)
         for junction in activations:
             # replace with len(junction.start_times) if multiple times are needed
-            node_id_arr = np.array([junction.id] * 1)
+            agent_id_arr = np.array([junction.id] * 1)
             ns3_id_arr = np.array([junction.ns3_id] * 1)
             start_time_arr = np.array(junction.start_times)
             end_time_arr = np.array(junction.end_times)
             temp_df = pd.DataFrame(
                 {
-                    ACTIVATION_COLUMNS[0]: node_id_arr,
+                    ACTIVATION_COLUMNS[0]: agent_id_arr,
                     ACTIVATION_COLUMNS[1]: ns3_id_arr,
                     ACTIVATION_COLUMNS[2]: start_time_arr,
                     ACTIVATION_COLUMNS[3]: end_time_arr,
