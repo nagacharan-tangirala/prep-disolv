@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 
 [project]
-name = "disolv-positions"
+name = "prep-disolv"
 authors = [
   { name = "Nagacharan Teja Tangirala", email = "nagacharan.tangirala@tum.de" },
 ]
