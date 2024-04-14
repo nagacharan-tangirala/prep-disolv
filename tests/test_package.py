@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import importlib.metadata
 
-import disolv_positions as m
+import prep_disolv as m
 
 
 def test_version():

@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import logging
 
-from disolv_positions.controller.central import CentralControllerPlacer
-from disolv_positions.common.config import (
+from prep_disolv.controller.central import CentralControllerPlacer
+from prep_disolv.common.config import (
     CONTROLLER_SETTINGS,
     OUTPUT_PATH,
     OUTPUT_SETTINGS,

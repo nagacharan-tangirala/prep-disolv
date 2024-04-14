@@ -7,7 +7,7 @@ from pyproj import Transformer
 import numpy as np
 import pandas as pd
 
-from disolv_positions.common.columns import (
+from prep_disolv.common.columns import (
     POSITIONS_FOLDER,
     ACTIVATIONS_FOLDER,
     RSU_COLUMNS,
@@ -15,8 +15,8 @@ from disolv_positions.common.columns import (
     COORD_X,
     COORD_Y,
 )
-from disolv_positions.common.utils import get_offsets, get_projection
-from disolv_positions.common.config import ID_INIT, NETWORK_FILE, START_TIME, \
+from prep_disolv.common.utils import get_offsets, get_projection
+from prep_disolv.common.config import ID_INIT, NETWORK_FILE, START_TIME, \
     RSU_SETTINGS, TRAFFIC_SETTINGS, SIMULATION_SETTINGS, Config, DURATION
 
 JUNCTION = "junction"

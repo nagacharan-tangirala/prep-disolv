@@ -2,14 +2,14 @@ from __future__ import annotations
 
 import logging
 
-from disolv_positions.controller.controller import ControllerConverter
-from disolv_positions.rsu.rsu import RsuConverter
-from disolv_positions.common.config import (
+from prep_disolv.controller.controller import ControllerConverter
+from prep_disolv.rsu.rsu import RsuConverter
+from prep_disolv.common.config import (
     LOG_SETTINGS,
     Config,
 )
-from disolv_positions.common.logger import setup_logging
-from disolv_positions.vehicle.vehicle import VehicleConverter
+from prep_disolv.common.logger import setup_logging
+from prep_disolv.vehicle.vehicle import VehicleConverter
 
 logger = logging.getLogger(__name__)
 

@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import logging
 
-from disolv_positions.common.config import *
-from disolv_positions.vehicle.sumo import SumoConverter
+from prep_disolv.common.config import *
+from prep_disolv.vehicle.sumo import SumoConverter
 
 logger = logging.getLogger(__name__)
 

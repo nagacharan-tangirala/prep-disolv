@@ -2,7 +2,7 @@ from pathlib import Path
 
 import toml
 
-from disolv_positions.common.columns import (
+from prep_disolv.common.columns import (
     ACTIVATIONS_FOLDER,
     POSITIONS_FOLDER,
 )

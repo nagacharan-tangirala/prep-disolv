@@ -4,16 +4,16 @@ from pathlib import Path
 
 import pandas as pd
 
-from disolv_positions.common.columns import (
+from prep_disolv.common.columns import (
     ACTIVATION_COLUMNS,
     ACTIVATIONS_FOLDER,
     CONTROLLER_COLUMNS,
     POSITIONS_FOLDER,
 )
-from disolv_positions.common.utils import get_center
-from disolv_positions.common.config import DURATION, ID_INIT, NETWORK_FILE, START_TIME, \
+from prep_disolv.common.utils import get_center
+from prep_disolv.common.config import DURATION, ID_INIT, NETWORK_FILE, START_TIME, \
     Config, CONTROLLER_SETTINGS, SIMULATION_SETTINGS, TRAFFIC_SETTINGS
-from disolv_positions.rsu.junction import get_lat_lon
+from prep_disolv.rsu.junction import get_lat_lon
 
 CENTRE = "center"
 

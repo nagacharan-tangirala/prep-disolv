@@ -13,11 +13,11 @@ import tqdm
 
 from typing import NamedTuple
 
-from disolv_positions.common.columns import POSITIONS_FOLDER
-from disolv_positions.common.utils import get_offsets
-from disolv_positions.common.config import NETWORK_FILE, TRACE_FILE, Config, \
+from prep_disolv.common.columns import POSITIONS_FOLDER
+from prep_disolv.common.utils import get_offsets
+from prep_disolv.common.config import NETWORK_FILE, TRACE_FILE, Config, \
     TRAFFIC_SETTINGS, VEHICLE_SETTINGS, SIMULATION_SETTINGS, DURATION
-from disolv_positions.vehicle.veh_activations import VehicleActivation
+from prep_disolv.vehicle.veh_activations import VehicleActivation
 
 logger = logging.getLogger(__name__)
 

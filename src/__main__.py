@@ -4,7 +4,7 @@ import argparse
 import sys
 import time
 
-from disolv_positions.core.core import Core
+from prep_disolv.core.core import Core
 
 
 def main():
