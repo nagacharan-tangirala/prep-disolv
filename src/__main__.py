@@ -16,7 +16,7 @@ def main():
     exec_start = time.time()
     core.prepare_scenario()
     exec_end = time.time()
-    print(f"Execution time: {exec_end - exec_start} seconds")
+    print(f"Execution time: {exec_end - exec_start:.3f} seconds")
 
 
 if __name__ == "__main__":
