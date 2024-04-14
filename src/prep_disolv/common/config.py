@@ -2,21 +2,20 @@ from pathlib import Path
 
 import toml
 
-from prep_pavenet.common.columns import (
+from prep_disolv.common.columns import (
     ACTIVATIONS_FOLDER,
-    LINKS_FOLDER,
     POSITIONS_FOLDER,
 )
 
 # Config keys.
 LOG_SETTINGS = "logging"
 TRAFFIC_SETTINGS = "traffic"
+DATA_STEP_SETTINGS = "data_steps"
 VEHICLE_SETTINGS = "vehicles"
 RSU_SETTINGS = "rsu"
 OUTPUT_SETTINGS = "output"
 CONTROLLER_SETTINGS = "controller"
 SIMULATION_SETTINGS = "simulation"
-LINK_SETTINGS = "links"
 
 # Common keys.
 ID_INIT = "id_init"
@@ -36,7 +35,6 @@ OUTPUT_PATH = "output_path"
 # RSU keys.
 PLACEMENT = "placement"
 START_TIME = "start_time"
-END_TIME = "end_time"
 
 # Logging keys.
 LOG_LEVEL = "log_level"
@@ -45,7 +43,6 @@ LOG_OVERWRITE = "log_overwrite"
 # Simulation keys.
 DURATION = "duration"
 STEP_SIZE = "step_size"
-STREAMING_TIME = "streaming_time"
 
 
 def read_config_toml(config_toml: str) -> dict:
@@ -83,7 +80,6 @@ class Config:
 
         output_path.mkdir(parents=True, exist_ok=True)
         Path.mkdir(output_path / ACTIVATIONS_FOLDER, exist_ok=True)
-        Path.mkdir(output_path / LINKS_FOLDER, exist_ok=True)
         Path.mkdir(output_path / POSITIONS_FOLDER, exist_ok=True)
 
     def get(self, key: str) -> dict:

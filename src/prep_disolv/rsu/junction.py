@@ -2,11 +2,12 @@ from __future__ import annotations
 
 import xml.etree.ElementTree as Et
 from pathlib import Path
+from pyproj import Transformer
 
 import numpy as np
 import pandas as pd
 
-from prep_pavenet.common.columns import (
+from prep_disolv.common.columns import (
     POSITIONS_FOLDER,
     ACTIVATIONS_FOLDER,
     RSU_COLUMNS,
@@ -14,21 +15,39 @@ from prep_pavenet.common.columns import (
     COORD_X,
     COORD_Y,
 )
-from prep_pavenet.common.utils import get_offsets
-from prep_pavenet.setup.config import END_TIME, ID_INIT, NETWORK_FILE, START_TIME
+from prep_disolv.common.utils import get_offsets, get_projection
+from prep_disolv.common.config import ID_INIT, NETWORK_FILE, START_TIME, \
+    RSU_SETTINGS, TRAFFIC_SETTINGS, SIMULATION_SETTINGS, Config, DURATION
 
 JUNCTION = "junction"
 
 
+def get_lat_lon(coord_x: str, coord_y: str, sumo_net: Path) -> tuple[float, float]:
+    """Get the latitude and longitude from the coordinates."""
+    from_proj = get_projection(sumo_net)
+    transformer = Transformer.from_crs(
+        crs_from=from_proj,
+        crs_to="epsg:4326",
+    )
+    return transformer.transform(float(coord_x), float(coord_y))
+
+
 class JunctionData:
-    def __init__(self, junction_id: int, ns3_id: int, x: float, y: float) -> None:
+    def __init__(
+        self, junction_id: int, ns3_id: int, x: float, y: float, lat: float, lon: float
+    ) -> None:
         self.ns3_id = ns3_id
         self.id = junction_id
         self.x = x
         self.y = y
+        self.lat = lat
+        self.lon = lon
 
     def __repr__(self) -> str:
-        return f"JunctionData({self.id}, {self.ns3_id}, {self.x}, {self.y})"
+        return (
+            f"JunctionData("
+            f"{self.id}, {self.ns3_id}, {self.x}, {self.y}, {self.lat}, {self.lon})"
+        )
 
 
 class JunctionActivationData:
@@ -49,20 +68,18 @@ class JunctionActivationData:
 class JunctionPlacement:
     def __init__(
         self,
-        trace_config: dict,
-        rsu_config: dict,
-        config_path: Path,
+        config: Config,
         output_path: Path,
         ns3_id_init: int,
     ):
         """The constructor of the JunctionPlacement class."""
         self.output_path = output_path
-        self.config_path = config_path
-        self.start_time = rsu_config[START_TIME]
-        self.end_time = rsu_config[END_TIME]
-        self.id_init = rsu_config[ID_INIT]
+        self.config_path = config.path
+        self.start_time = config.get(RSU_SETTINGS)[START_TIME]
+        self.end_time = config.get(SIMULATION_SETTINGS)[DURATION]
+        self.id_init = config.get(RSU_SETTINGS)[ID_INIT]
         self.ns3_id_init = ns3_id_init
-        self.sumo_net = config_path / trace_config[NETWORK_FILE]
+        self.sumo_net = self.config_path / config.get(TRAFFIC_SETTINGS)[NETWORK_FILE]
         self.rsu_count = 0
         self.parquet_file = (
             self.output_path / POSITIONS_FOLDER / "roadside_units.parquet"
@@ -98,13 +115,13 @@ class JunctionPlacement:
         activation_df = pd.DataFrame(columns=ACTIVATION_COLUMNS)
         for junction in activations:
             # replace with len(junction.start_times) if multiple times are needed
-            node_id_arr = np.array([junction.id] * 1)
+            agent_id_arr = np.array([junction.id] * 1)
             ns3_id_arr = np.array([junction.ns3_id] * 1)
             start_time_arr = np.array(junction.start_times)
             end_time_arr = np.array(junction.end_times)
             temp_df = pd.DataFrame(
                 {
-                    ACTIVATION_COLUMNS[0]: node_id_arr,
+                    ACTIVATION_COLUMNS[0]: agent_id_arr,
                     ACTIVATION_COLUMNS[1]: ns3_id_arr,
                     ACTIVATION_COLUMNS[2]: start_time_arr,
                     ACTIVATION_COLUMNS[3]: end_time_arr,
@@ -121,7 +138,15 @@ class JunctionPlacement:
         """Write the junction data to a file."""
         junction_df = pd.DataFrame(
             [
-                [0, junction.id, junction.ns3_id, junction.x, junction.y]
+                [
+                    0,
+                    junction.id,
+                    junction.ns3_id,
+                    junction.x,
+                    junction.y,
+                    junction.lat,
+                    junction.lon,
+                ]
                 for junction in junctions
             ],
             columns=RSU_COLUMNS,
@@ -145,7 +170,10 @@ class JunctionPlacement:
                 junction_id = self.id_init + junction_count
                 x = float(item.attrib[COORD_X]) - offset_x
                 y = float(item.attrib[COORD_Y]) - offset_y
-                junctions.append(JunctionData(junction_id, self.ns3_id_init, x, y))
+                lat, lon = get_lat_lon(x, y, self.sumo_net)
+                junctions.append(
+                    JunctionData(junction_id, self.ns3_id_init, x, y, lat, lon)
+                )
                 junction_count += 1
                 self.ns3_id_init += 1
         return junctions

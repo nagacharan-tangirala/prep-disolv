@@ -4,14 +4,16 @@ from pathlib import Path
 
 import pandas as pd
 
-from prep_pavenet.common.columns import (
+from prep_disolv.common.columns import (
     ACTIVATION_COLUMNS,
     ACTIVATIONS_FOLDER,
     CONTROLLER_COLUMNS,
     POSITIONS_FOLDER,
 )
-from prep_pavenet.common.utils import get_center, get_offsets
-from prep_pavenet.setup.config import END_TIME, ID_INIT, NETWORK_FILE, START_TIME
+from prep_disolv.common.utils import get_center
+from prep_disolv.common.config import DURATION, ID_INIT, NETWORK_FILE, START_TIME, \
+    Config, CONTROLLER_SETTINGS, SIMULATION_SETTINGS, TRAFFIC_SETTINGS
+from prep_disolv.rsu.junction import get_lat_lon
 
 CENTRE = "center"
 
@@ -19,19 +21,17 @@ CENTRE = "center"
 class CentralControllerPlacer:
     def __init__(
         self,
-        trace_config: dict,
-        cont_config: dict,
-        config_path: Path,
+        config: Config,
         output_path: Path,
         controller_id_init: int,
     ) -> None:
         """The constructor of the CentralControllerPlacer class."""
         self.output_path: Path = output_path
-        self.config_path: Path = config_path
-        self.start_time: int = cont_config[START_TIME]
-        self.end_time: int = cont_config[END_TIME]
-        self.id_init: int = cont_config[ID_INIT]
-        self.sumo_net: Path = config_path / trace_config[NETWORK_FILE]
+        self.config_path: Path = config.path
+        self.start_time: int = config.get(CONTROLLER_SETTINGS)[START_TIME]
+        self.id_init: int = config.get(CONTROLLER_SETTINGS)[ID_INIT]
+        self.end_time: int = config.get(SIMULATION_SETTINGS)[DURATION]
+        self.sumo_net: Path = self.config_path / config.get(TRAFFIC_SETTINGS)[NETWORK_FILE]
         self.controller_id_init = controller_id_init
         self.controller_file = (
             self.output_path / POSITIONS_FOLDER / "controllers.parquet"
@@ -62,16 +62,17 @@ class CentralControllerPlacer:
         """Write the controller data to a file."""
         controller_id = self.id_init
         centers = get_center(self.sumo_net)
-        offsets = get_offsets(self.sumo_net)
-        offset_x, offset_y = offsets[0], offsets[1]
+        center_lat, center_lon = get_lat_lon(centers[0], centers[1], self.sumo_net)
         controller_df = pd.DataFrame(
             [
                 [
                     0,
                     controller_id,
                     self.controller_id_init,
-                    centers[0] - offset_x,
-                    centers[1] - offset_y,
+                    centers[0],
+                    centers[1],
+                    center_lat,
+                    center_lon,
                 ]
             ],
             columns=CONTROLLER_COLUMNS,

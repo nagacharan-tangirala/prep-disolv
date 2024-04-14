@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import logging
 
-from prep_pavenet.controller.controller import ControllerConverter
-from prep_pavenet.links.devices import DeviceLinks
-from prep_pavenet.rsu.rsu import RsuConverter
-from prep_pavenet.setup.config import LOG_SETTINGS, Config
-from prep_pavenet.setup.logger import setup_logging
-from prep_pavenet.vehicle.vehicle import VehicleConverter
+from prep_disolv.controller.controller import ControllerConverter
+from prep_disolv.rsu.rsu import RsuConverter
+from prep_disolv.common.config import (
+    LOG_SETTINGS,
+    Config,
+)
+from prep_disolv.common.logger import setup_logging
+from prep_disolv.vehicle.vehicle import VehicleConverter
 
 logger = logging.getLogger(__name__)
 
@@ -26,28 +28,26 @@ class Core:
 
     def _prepare_scenario(self) -> None:
         """Prepare the scenario."""
-        total_node_count = 0
+        total_agent_count = 0
         logger.info("Preparing the Vehicle Data")
         vehicle_count = self._create_vehicle_data()
-        total_node_count += vehicle_count
+        total_agent_count += vehicle_count
         vehicle_msg = f"Number of vehicles: {vehicle_count}"
         logger.info(vehicle_msg)
 
         logger.info("Preparing RSU data")
-        rsu_count = self._create_rsu_data(total_node_count)
-        total_node_count += rsu_count
+        rsu_count = self._create_rsu_data(total_agent_count)
+        total_agent_count += rsu_count
         rsu_msg = f"Number of RSUs: {rsu_count}"
         logger.info(rsu_msg)
 
         logger.info("Preparing Controller data")
-        self._create_controller_data(total_node_count)
+        self._create_controller_data(total_agent_count)
 
         logger.info("Preparing Base Station data")
         self._create_base_station_data()
-        logger.info("Scenario is prepared")
 
-        logger.info("Creating the links")
-        self._create_links()
+        logger.info("Scenario is prepared")
 
     def _create_vehicle_data(self) -> int:
         """Create the vehicle data."""
@@ -72,14 +72,3 @@ class Core:
 
     def _create_base_station_data(self) -> None:
         """Create the base station data."""
-
-    def _create_links(self) -> None:
-        """Create the links."""
-        logger.info("Creating the links")
-        assert self.vehicle_file is not None
-        assert self.rsu_file is not None
-        assert self.controller_file is not None
-        device_links = DeviceLinks(
-            self.vehicle_file, self.rsu_file, self.controller_file, self.config
-        )
-        device_links.create_all_links()

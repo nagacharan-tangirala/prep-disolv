@@ -5,7 +5,7 @@ import importlib.metadata
 project = "prep-pavenet"
 copyright = "2023, Nagacharan Teja Tangirala"
 author = "Nagacharan Teja Tangirala"
-version = release = importlib.metadata.version("prep_pavenet")
+version = release = importlib.metadata.version("disolv_positions")
 
 extensions = [
     "myst_parser",

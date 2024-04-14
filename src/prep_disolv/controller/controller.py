@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import logging
 
-from prep_pavenet.controller.central import CentralControllerPlacer
-from prep_pavenet.setup.config import (
+from prep_disolv.controller.central import CentralControllerPlacer
+from prep_disolv.common.config import (
     CONTROLLER_SETTINGS,
     OUTPUT_PATH,
     OUTPUT_SETTINGS,
@@ -30,9 +30,7 @@ class ControllerConverter:
         output_path = self.config.path / self.config.get(OUTPUT_SETTINGS)[OUTPUT_PATH]
         if self.config.get(CONTROLLER_SETTINGS)[PLACEMENT] == CENTER:
             controller_placer = CentralControllerPlacer(
-                self.config.get(TRAFFIC_SETTINGS),
-                self.config.get(CONTROLLER_SETTINGS),
-                self.config.path,
+                self.config,
                 output_path,
                 controller_id_init,
             )

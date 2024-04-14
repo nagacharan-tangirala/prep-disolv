@@ -4,13 +4,13 @@ build-backend = "hatchling.build"
 
 
 [project]
-name = "prep-pavenet"
+name = "prep-disolv"
 authors = [
   { name = "Nagacharan Teja Tangirala", email = "nagacharan.tangirala@tum.de" },
 ]
-description = "The scenarios for PAVeNet are prepared by this project."
+description = "The position files for disolv are prepared by this project."
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.12"
 classifiers = [
   "Development Status :: 1 - Planning",
   "Intended Audience :: Science/Research",
@@ -55,15 +55,16 @@ docs = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/nagacharan-tangirala/prep-pavenet"
-"Bug Tracker" = "https://github.com/nagacharan-tangirala/prep-pavenet/issues"
-Discussions = "https://github.com/nagacharan-tangirala/prep-pavenet/discussions"
-Changelog = "https://github.com/nagacharan-tangirala/prep-pavenet/releases"
+Homepage = "https://github.com/nagacharan-tangirala/disolv-positions"
+"Bug Tracker" = "https://github.com/nagacharan-tangirala/disolv-positions/issues"
+Discussions = "https://github.com/nagacharan-tangirala/disolv-positions/discussions"
+Changelog = "https://github.com/nagacharan-tangirala/disolv-positions/releases"
 
 
 [tool.hatch]
 version.source = "vcs"
-build.hooks.vcs.version-file = "src/prep_pavenet/_version.py"
+build.hooks.vcs.version-file = "src/disolv_positions/_version.py"
+envs.default.python = "3.12"
 envs.default.dependencies = [
   "pytest",
   "pytest-cov",
@@ -84,7 +85,7 @@ testpaths = [
 
 
 [tool.coverage]
-run.source = ["prep_pavenet"]
+run.source = ["disolv_positions"]
 port.exclude_lines = [
   'pragma: no cover',
   '\.\.\.',
@@ -93,7 +94,7 @@ port.exclude_lines = [
 
 [tool.mypy]
 files = ["src", "tests"]
-python_version = "3.8"
+python_version = "3.12"
 warn_unused_configs = true
 strict = true
 show_error_codes = true
@@ -103,7 +104,7 @@ disallow_untyped_defs = false
 disallow_incomplete_defs = false
 
 [[tool.mypy.overrides]]
-module = "prep_pavenet.*"
+module = "disolv_positions.*"
 disallow_untyped_defs = true
 disallow_incomplete_defs = true
 
@@ -140,7 +141,7 @@ ignore = [
 ]
 isort.required-imports = ["from __future__ import annotations"]
 # Uncomment if using a _compat.typing backport
-# typing-modules = ["prep_pavenet._compat.typing"]
+# typing-modules = ["disolv_positions._compat.typing"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["T20"]
@@ -148,7 +149,7 @@ isort.required-imports = ["from __future__ import annotations"]
 
 
 [tool.pylint]
-py-version = "3.8"
+py-version = "3.12"
 ignore-paths = [".*/_version.py"]
 reports.output-format = "colorized"
 similarities.ignore-imports = "yes"

@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import logging
 
-from prep_pavenet.setup.config import *
-from prep_pavenet.vehicle.sumo import SumoConverter
+from prep_disolv.common.config import *
+from prep_disolv.vehicle.sumo import SumoConverter
 
 logger = logging.getLogger(__name__)
 
@@ -23,9 +23,7 @@ class VehicleConverter:
         output_path = self.config.path / self.config.get(OUTPUT_SETTINGS)[OUTPUT_PATH]
         if self.config.get(VEHICLE_SETTINGS)[SIMULATOR] == SUMO:
             sumo_converter = SumoConverter(
-                self.config.get(TRAFFIC_SETTINGS),
-                self.config.get(VEHICLE_SETTINGS),
-                self.config.path,
+                self.config,
                 output_path,
             )
             sumo_converter.fcd_to_parquet()

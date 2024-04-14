@@ -1,27 +1,15 @@
-# prep-pavenet
+# Prep-Disolv
 
-[![Actions Status][actions-badge]][actions-link]
-[![Documentation Status][rtd-badge]][rtd-link]
+This repository does the pre-processing of the mobility traces to be readable by [Disolv](https://github.com/nagacharan-tangirala/disolv).
 
-[![PyPI version][pypi-version]][pypi-link]
-[![Conda-Forge][conda-badge]][conda-link]
-[![PyPI platforms][pypi-platforms]][pypi-link]
+### Features
 
-[![GitHub Discussion][github-discussions-badge]][github-discussions-link]
+- Reads SUMO Floating Car Data (FCD) traces and converts them to Disolv readable format.
+- Generates Activation timing files for all the devices.
+- Positions Road-side Units (RSUs) at junctions.
 
-<!-- SPHINX-START -->
+### Note
 
-<!-- prettier-ignore-start -->
-[actions-badge]:            https://github.com/nagacharan-tangirala/prep-pavenet/workflows/CI/badge.svg
-[actions-link]:             https://github.com/nagacharan-tangirala/prep-pavenet/actions
-[conda-badge]:              https://img.shields.io/conda/vn/conda-forge/prep-pavenet
-[conda-link]:               https://github.com/conda-forge/prep-pavenet-feedstock
-[github-discussions-badge]: https://img.shields.io/static/v1?label=Discussions&message=Ask&color=blue&logo=github
-[github-discussions-link]:  https://github.com/nagacharan-tangirala/prep-pavenet/discussions
-[pypi-link]:                https://pypi.org/project/prep-pavenet/
-[pypi-platforms]:           https://img.shields.io/pypi/pyversions/prep-pavenet
-[pypi-version]:             https://img.shields.io/pypi/v/prep-pavenet
-[rtd-badge]:                https://readthedocs.org/projects/prep-pavenet/badge/?version=latest
-[rtd-link]:                 https://prep-pavenet.readthedocs.io/en/latest/?badge=latest
-
-<!-- prettier-ignore-end -->
+- Requirement and tool specific extensions are possible. New source of mobility traces can be added using the SUMO case as an example.
+- The RSU placement can be extended to other types of placement strategies or even to other types of infrastructure.
+- One-time scripts are added to the directory `scripts` for later reference.
