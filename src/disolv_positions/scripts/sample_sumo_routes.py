@@ -10,7 +10,7 @@ if __name__ == "__main__":
     scenario = args.parse_args().scenario
     factor = args.parse_args().factor
 
-    input_path = Path("/mnt/hdd/workspace/pavenet/raw/" + scenario)
+    input_path = Path("/mnt/hdd/workspace/disolv/raw/" + scenario)
     sumo_file = input_path / (scenario + ".rou.xml")
     output_file = input_path / (scenario + "_{}_scaled.rou.xml".format(factor))
     print("Reading sumo file from", sumo_file)
