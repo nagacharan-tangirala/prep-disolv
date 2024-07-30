@@ -110,7 +110,7 @@ class JunctionPlacement:
             activations.append(junction_data)
 
         activation_file = (
-            self.output_path / ACTIVATIONS_FOLDER / "rsu_activations.parquet"
+                self.output_path / ACTIVATIONS_FOLDER / "rsu_activations.parquet"
         )
         activation_df = pd.DataFrame(columns=ACTIVATION_COLUMNS)
         for junction in activations:

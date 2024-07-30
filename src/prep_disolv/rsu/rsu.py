@@ -5,9 +5,10 @@ from src.prep_disolv.common.config import (
     OUTPUT_SETTINGS,
     PLACEMENT,
     RSU_SETTINGS,
-    TRAFFIC_SETTINGS,
     Config,
 )
+from src.prep_disolv.rsu.junction import JunctionPlacement
+from src.prep_disolv.rsu.given import InputPlacement
 
 
 class RsuConverter:
@@ -23,8 +24,6 @@ class RsuConverter:
         if self.config.get(RSU_SETTINGS) is not None:
             rsu_placement_type = self.config.get(RSU_SETTINGS)[PLACEMENT]
             if rsu_placement_type == "junction":
-                from prep_disolv.rsu.junction import JunctionPlacement
-
                 rsu_placement = JunctionPlacement(
                     self.config,
                     output_path,
