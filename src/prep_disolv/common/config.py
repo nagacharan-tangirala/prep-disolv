@@ -2,7 +2,7 @@ from pathlib import Path
 
 import toml
 
-from prep_disolv.common.columns import (
+from src.prep_disolv.common.columns import (
     ACTIVATIONS_FOLDER,
     POSITIONS_FOLDER,
 )
@@ -34,6 +34,7 @@ OUTPUT_PATH = "output_path"
 
 # RSU keys.
 PLACEMENT = "placement"
+RSU_FILENAME = "rsu_filename"
 START_TIME = "start_time"
 
 # Logging keys.
