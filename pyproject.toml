@@ -63,7 +63,6 @@ Changelog = "https://github.com/nagacharan-tangirala/disolv-positions/releases"
 
 [tool.hatch]
 version.source = "vcs"
-build.hooks.vcs.version-file = "src/disolv_positions/_version.py"
 envs.default.python = "3.12"
 envs.default.dependencies = [
   "pytest",
