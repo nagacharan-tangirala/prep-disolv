@@ -34,4 +34,12 @@ class RsuConverter:
                 self.rsu_count = rsu_placement.get_unique_rsu_count()
                 self.rsu_file = rsu_placement.get_parquet_file()
                 return self.rsu_count
+
+            if rsu_placement_type == "given":
+                rsu_placement = InputPlacement(self.config, output_path)
+                rsu_placement.create_rsu_data()
+                self.rsu_count = rsu_placement.get_unique_rsu_count()
+                self.rsu_file = rsu_placement.get_parquet_file()
+                return self.rsu_count
+
         return 0
