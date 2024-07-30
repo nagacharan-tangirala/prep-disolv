@@ -35,17 +35,20 @@ class Core:
         vehicle_msg = f"Number of vehicles: {vehicle_count}"
         logger.info(vehicle_msg)
 
-        logger.info("Preparing RSU data")
-        rsu_count = self._create_rsu_data(total_agent_count)
-        total_agent_count += rsu_count
-        rsu_msg = f"Number of RSUs: {rsu_count}"
-        logger.info(rsu_msg)
+        if 'rsu' in self.config.settings.keys():
+            logger.info("Preparing RSU data")
+            rsu_count = self._create_rsu_data(total_agent_count)
+            total_agent_count += rsu_count
+            rsu_msg = f"Number of RSUs: {rsu_count}"
+            logger.info(rsu_msg)
 
-        logger.info("Preparing Controller data")
-        self._create_controller_data(total_agent_count)
+        if 'controller' in self.config.settings.keys():
+            logger.info("Preparing Controller data")
+            self._create_controller_data(total_agent_count)
 
-        logger.info("Preparing Base Station data")
-        self._create_base_station_data()
+        if 'base_station' in self.config.settings.keys():
+            logger.info("Preparing Base Station data")
+            self._create_base_station_data()
 
         logger.info("Scenario is prepared")
 
