@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from prep_disolv.common.config import (
+from src.prep_disolv.common.config import (
     OUTPUT_PATH,
     OUTPUT_SETTINGS,
     PLACEMENT,
