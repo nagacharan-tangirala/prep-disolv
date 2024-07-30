@@ -39,7 +39,7 @@ class FCDDataArrays:
         self.x = np.array([], dtype=np.float64)
         self.y = np.array([], dtype=np.float64)
         self.velocity = np.array([], dtype=np.float64)
-        self.road_data = np.array([], dtype=np.string_)
+        self.road_data = np.array([], dtype=np.bytes_)
         self.veh_type = np.array([], dtype=str)
 
     def reset(self) -> None:
@@ -49,7 +49,7 @@ class FCDDataArrays:
         self.x = np.array([], dtype=np.float64)
         self.y = np.array([], dtype=np.float64)
         self.velocity = np.array([], dtype=np.float64)
-        self.road_data = np.array([], dtype=np.string_)
+        self.road_data = np.array([], dtype=np.bytes_)
         self.veh_type = np.array([], dtype=str)
 
 
