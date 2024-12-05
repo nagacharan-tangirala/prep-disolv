@@ -3,8 +3,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from src.prep_disolv.common.columns import POSITIONS_FOLDER, ACTIVATIONS_FOLDER, ACTIVATION_COLUMNS
-from src.prep_disolv.common.config import Config, RSU_SETTINGS, START_TIME, SIMULATION_SETTINGS, DURATION, RSU_FILENAME
+from prep_disolv.common.columns import POSITIONS_FOLDER, ACTIVATIONS_FOLDER, ACTIVATION_COLUMNS
+from prep_disolv.common.config import Config, RSU_SETTINGS, START_TIME, SIMULATION_SETTINGS, DURATION, RSU_FILENAME
 
 
 class RSUData:

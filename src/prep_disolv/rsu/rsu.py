@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-from src.prep_disolv.common.config import (
+from prep_disolv.common.config import (
     OUTPUT_PATH,
     OUTPUT_SETTINGS,
     PLACEMENT,
     RSU_SETTINGS,
     Config,
 )
-from src.prep_disolv.rsu.junction import JunctionPlacement
-from src.prep_disolv.rsu.given import InputPlacement
+from prep_disolv.rsu.junction import JunctionPlacement
+from prep_disolv.rsu.given import InputPlacement
 
 
 class RsuConverter:

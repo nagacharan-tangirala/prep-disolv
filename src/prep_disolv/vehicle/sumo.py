@@ -11,13 +11,11 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 import tqdm
 
-from typing import NamedTuple
-
-from src.prep_disolv.common.columns import POSITIONS_FOLDER
-from src.prep_disolv.common.utils import get_offsets
-from src.prep_disolv.common.config import NETWORK_FILE, TRACE_FILE, Config, \
+from prep_disolv.common.columns import POSITIONS_FOLDER
+from prep_disolv.common.utils import get_offsets
+from prep_disolv.common.config import NETWORK_FILE, TRACE_FILE, Config, \
     TRAFFIC_SETTINGS, SIMULATION_SETTINGS, DURATION
-from src.prep_disolv.vehicle.veh_activations import VehicleActivation
+from prep_disolv.vehicle.veh_activations import VehicleActivation
 
 logger = logging.getLogger(__name__)
 

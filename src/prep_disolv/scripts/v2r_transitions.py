@@ -26,15 +26,15 @@ class V2RTransitions:
         rsu_df = pd.read_parquet(self.rsu_file)
 
         # Create a mapping between node ID and NS3 ID
-        self.mapping_with_offset = dict(zip(rsu_df["agent_id"], rsu_df["ns3_id"]))
+        self.mapping_with_offset = dict(zip(rsu_df["agent_id"], rsu_df["agent_id"]))
 
         # Get offset based on first RSU NS3 ID and subtract from all IDs.
-        offset = rsu_df.iloc[0]["ns3_id"]
-        rsu_df["ns3_id"] = rsu_df["ns3_id"] - offset
-        rsu_df["ns3_id"] = rsu_df["ns3_id"].astype(int)
+        offset = rsu_df.iloc[0]["agent_id"]
+        rsu_df["agent_id"] = rsu_df["agent_id"] - offset
+        rsu_df["agent_id"] = rsu_df["agent_id"].astype(int)
 
         # Create a mapping between node ID and NS3 ID
-        self.mapping_without_offset = dict(zip(rsu_df["agent_id"], rsu_df["ns3_id"]))
+        self.mapping_without_offset = dict(zip(rsu_df["agent_id"], rsu_df["agent_id"]))
 
     def get_mapping_with_offset(self) -> dict:
         return self.mapping_with_offset
@@ -48,8 +48,8 @@ if __name__ == "__main__":
     args.add_argument("--scenario", type=str, required=True)
     scenario = args.parse_args().scenario
 
-    input_path = Path("/mnt/hdd/workspace/disolv/input/" + scenario)
-    rsu_pos_file = input_path / "positions" / "roadside_units.parquet"
+    input_path = Path("/Users/charan/workspace/disolv/input/" + scenario)
+    rsu_pos_file = input_path / "positions" / "rsu_deployment.parquet"
     links_file = input_path / "links" / "v2r_links.parquet"
     print("Reading RSU data from", rsu_pos_file)
     print("Reading links data from", links_file)
@@ -77,17 +77,9 @@ if __name__ == "__main__":
 
     # Convert node IDs to NS3 IDs
     ns3_df = filtered_df.copy()
-    node_mapping = transitions.get_mapping_with_offset()
-    ns3_df["target_id"] = ns3_df["target_id"].replace(node_mapping)
+    # node_mapping = transitions.get_mapping_with_offset()
+    # ns3_df["target_id"] = ns3_df["target_id"].replace(node_mapping)
 
     output_file = input_path / "links" / "v2r_transitions.parquet"
     print("Writing links data for NS3 to", output_file)
     ns3_df.to_parquet(output_file, index=False)
-
-    mosaic_df = filtered_df.copy()
-    node_mapping = transitions.get_mapping_without_offset()
-    mosaic_df["target_id"] = mosaic_df["target_id"].replace(node_mapping)
-
-    link_transition_file = input_path / "links" / "v2r_transitions.csv"
-    print("Writing links data for Mosaic to", link_transition_file)
-    mosaic_df.to_csv(link_transition_file, index=False, header=False)
