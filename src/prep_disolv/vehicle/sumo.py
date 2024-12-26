@@ -14,7 +14,7 @@ import tqdm
 from prep_disolv.common.columns import POSITIONS_FOLDER
 from prep_disolv.common.utils import get_offsets
 from prep_disolv.common.config import NETWORK_FILE, TRACE_FILE, Config, \
-    TRAFFIC_SETTINGS, SIMULATION_SETTINGS, DURATION
+    TRAFFIC_SETTINGS, SIMULATION_SETTINGS, DURATION, VEHICLE_SETTINGS, ID_INIT
 from prep_disolv.vehicle.veh_activations import VehicleActivation
 
 logger = logging.getLogger(__name__)
@@ -70,6 +70,8 @@ class SumoConverter:
         self.step_size = config.get(SIMULATION_SETTINGS)[DURATION]
         self.parquet_file: Path = output_path
         self.time_offset = -1
+        self.vehicle_id_init = config.get(VEHICLE_SETTINGS)[ID_INIT]
+        self.vehicle_id_pool = {}
 
     def fcd_to_parquet(self) -> None:
         """Convert the FCD output from SUMO to a parquet file."""
@@ -87,6 +89,16 @@ class SumoConverter:
     def get_parquet_file(self) -> Path:
         """Get the parquet file."""
         return self.parquet_file
+
+    def get_vehicle_id_from_pool(self, vehicle_id_str: str) -> int:
+        """Return a vehicle ID from the map."""
+        if vehicle_id_str in self.vehicle_id_pool.keys():
+            vehicle_id = self.vehicle_id_pool[vehicle_id_str]
+        else:
+            vehicle_id = self.vehicle_id_init
+            self.vehicle_id_pool[vehicle_id_str] = vehicle_id
+            self.vehicle_id_init = self.vehicle_id_init + 1
+        return vehicle_id
 
     def _convert_fcd_to_parquet(self) -> None:
         """Convert the FCD output from SUMO to a parquet file."""
@@ -111,9 +123,9 @@ class SumoConverter:
 
                 for vehicle_ele in veh_ele:
                     fcd_arrays.time_step = np.append(fcd_arrays.time_step, timestamp)
-                    vehicle_id = int(vehicle_ele.attrib["id"])
+                    vehicle_id = self.get_vehicle_id_from_pool(vehicle_ele.attrib["id"])
                     self.activation.update_activation(timestamp, vehicle_id)
-                    fcd_arrays = self._read_vehicle_data(vehicle_ele, fcd_arrays)
+                    fcd_arrays = self._read_vehicle_data(vehicle_ele, fcd_arrays, vehicle_id)
 
                     if fcd_arrays.array_size == 10000:
                         logger.debug("Writing fcd data to parquet at %s", timestamp)
@@ -137,11 +149,11 @@ class SumoConverter:
         self.activation.write_activation_data()
 
     def _read_vehicle_data(
-        self, vehicle_ele: Et.Element, fcd_arrays: FCDDataArrays
+        self, vehicle_ele: Et.Element, fcd_arrays: FCDDataArrays, vehicle_id: int
     ) -> FCDDataArrays:
         """Read the vehicle data from XML element and add it to FCD arrays."""
         fcd_arrays.agent_id = np.append(
-            fcd_arrays.agent_id, int(vehicle_ele.attrib["id"])
+            fcd_arrays.agent_id, vehicle_id
         )
         fcd_arrays.x = np.append(
             fcd_arrays.x, float(vehicle_ele.attrib["x"]) - self.offset_x
