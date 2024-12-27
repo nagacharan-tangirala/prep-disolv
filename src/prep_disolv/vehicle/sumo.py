@@ -92,12 +92,15 @@ class SumoConverter:
 
     def get_vehicle_id_from_pool(self, vehicle_id_str: str) -> int:
         """Return a vehicle ID from the map."""
-        if vehicle_id_str in self.vehicle_id_pool.keys():
-            vehicle_id = self.vehicle_id_pool[vehicle_id_str]
-        else:
-            vehicle_id = self.vehicle_id_init
-            self.vehicle_id_pool[vehicle_id_str] = vehicle_id
-            self.vehicle_id_init = self.vehicle_id_init + 1
+        try:
+            vehicle_id = int(vehicle_id_str)
+        except ValueError:
+            if vehicle_id_str in self.vehicle_id_pool.keys():
+                vehicle_id = self.vehicle_id_pool[vehicle_id_str]
+            else:
+                vehicle_id = self.vehicle_id_init
+                self.vehicle_id_pool[vehicle_id_str] = vehicle_id
+                self.vehicle_id_init = self.vehicle_id_init + 1
         return vehicle_id
 
     def _convert_fcd_to_parquet(self) -> None:
