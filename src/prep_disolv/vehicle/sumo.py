@@ -14,7 +14,7 @@ import tqdm
 from prep_disolv.common.columns import POSITIONS_FOLDER
 from prep_disolv.common.utils import get_offsets
 from prep_disolv.common.config import NETWORK_FILE, TRACE_FILE, Config, \
-    TRAFFIC_SETTINGS, SIMULATION_SETTINGS, DURATION, VEHICLE_SETTINGS, ID_INIT
+    TRAFFIC_SETTINGS, SIMULATION_SETTINGS, DURATION, VEHICLE_SETTINGS, ID_INIT, STEP_SIZE
 from prep_disolv.vehicle.veh_activations import VehicleActivation
 
 logger = logging.getLogger(__name__)
@@ -67,7 +67,7 @@ class SumoConverter:
         self.offset_x, self.offset_y = offsets[0], offsets[1]
         self.unique_vehicle_count = 0
         self.duration = config.get(SIMULATION_SETTINGS)[DURATION]
-        self.step_size = config.get(SIMULATION_SETTINGS)[DURATION]
+        self.step_size = config.get(SIMULATION_SETTINGS)[STEP_SIZE]
         self.parquet_file: Path = output_path
         self.time_offset = -1
         self.vehicle_id_init = config.get(VEHICLE_SETTINGS)[ID_INIT]
